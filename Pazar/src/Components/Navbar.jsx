@@ -5,7 +5,7 @@ function Navbar() {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">SecondHandShop</a>
+                <a className="navbar-brand" href="/">SecondHandShop</a>
                 <div className="mx-auto" style={{ width: "50%" }}> {/* Adjust the width as needed */}
                     <SearchBar />
                 </div>

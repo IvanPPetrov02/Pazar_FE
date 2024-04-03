@@ -1,4 +1,3 @@
-import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 
 const CategoryMenu = () => {
@@ -9,10 +8,8 @@ const CategoryMenu = () => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-                <Dropdown.Item href="#books">Books</Dropdown.Item>
-                <Dropdown.Item href="#clothes">Clothes</Dropdown.Item>
-                <Dropdown.Item href="#electronics">Electronics</Dropdown.Item>
-                {/* Add more categories as needed */}
+                <Dropdown.Item href="/categories/books">Books</Dropdown.Item>
+                {/* Add more categories as if */}
             </Dropdown.Menu>
         </Dropdown>
     );

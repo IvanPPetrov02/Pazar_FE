@@ -12,7 +12,7 @@ const itemData = {
 };
 
 
-export const Item = () => {
+export const ItemPage = () => {
     return (
         <Container>
             <Row className="my-5">
