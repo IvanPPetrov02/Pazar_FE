@@ -4,7 +4,7 @@ import FilterSidebar from "../Components/FilterSidebar.jsx";
 import Categories from "../Components/Categories.jsx";
 import Footer from "../Components/Footer.jsx";
 
-function HomePage() {
+function CategoriesPage() {
     return (
         <div className="App d-flex flex-column min-vh-100">
             <Navbar />
@@ -24,4 +24,4 @@ function HomePage() {
     );
 }
 
-export default HomePage;
+export default CategoriesPage;

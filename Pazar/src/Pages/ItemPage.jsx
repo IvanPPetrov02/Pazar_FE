@@ -1,4 +1,5 @@
 import { Button, Container, Row, Col, Card } from 'react-bootstrap';
+import Navbar from "../Components/Navbar.jsx";
 
 
 const itemData = {
@@ -14,6 +15,8 @@ const itemData = {
 
 export const ItemPage = () => {
     return (
+        <div className="App d-flex flex-column min-vh-100">
+            <Navbar />
         <Container>
             <Row className="my-5">
                 <Col md={6}>
@@ -44,5 +47,6 @@ export const ItemPage = () => {
                 </Col>
             </Row>
         </Container>
+        </div>
     );
 }
