@@ -5,6 +5,7 @@ import CategoriesPage from "./Pages/CategoriesPage.jsx";
 import ItemsPage from "./Pages/ItemsPage.jsx";
 import MessagesPage from "./Pages/MessagesPage.jsx";
 import AddItemPage from "./Pages/AddItemPage.jsx";
+import ChatPage from "./Pages/ChatPage.jsx";
 
 
 function App() {
@@ -14,7 +15,9 @@ function App() {
         { path: '/categories', element: <CategoriesPage />},
         { path: '/categories/:categoryId/items', element: <ItemsPage /> },
         { path: '/messages', element: <MessagesPage /> },
-        { path: '/add-item', element: <AddItemPage /> }
+        { path: '/add-item', element: <AddItemPage /> },
+        { path: '/chat/:messageId', element: <ChatPage /> },
+
     ]);
 
     return <RouterProvider router={router} />;

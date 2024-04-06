@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import  { useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import CategoryMenu from './CategoryMenu';
+import LoginButton from './LoginButton'; // Adjust the import path as needed
+import LogoutButton from './LogoutButton'; // Adjust the import path as needed
 
 const Navbar = () => {
+    const { isAuthenticated } = useAuth0();
     const [searchExpanded, setSearchExpanded] = useState(false);
 
     const toggleSearch = () => setSearchExpanded(!searchExpanded);
@@ -36,8 +40,9 @@ const Navbar = () => {
                     </div>
                 </div>
 
+                {/* Authentication buttons */}
                 <div className="ml-auto" style={{ marginRight: '20px' }}>
-                    <button className="btn btn-outline-primary" type="button">Login</button>
+                    {isAuthenticated ? <LogoutButton /> : <LoginButton />}
                 </div>
             </nav>
 
