@@ -30,7 +30,7 @@ jobs:
         context: ./Pazar
         file: ./Pazar/Dockerfile
         push: true
-        tags: ivanpetrov/pazar_fe:latest
+        tags: ivanppetrov/pazar_fe:latest
 
     - name: Logout from Docker
       if: always()
