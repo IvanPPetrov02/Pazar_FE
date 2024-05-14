@@ -1,9 +1,11 @@
-import Navbar from "../Components/Navbar.jsx";
-import FilterSidebar from "../Components/FilterSidebar.jsx";
-import Suggestions from "../Components/Suggestions.jsx";
-import Footer from "../Components/Footer.jsx";
+import Navbar from '../Components/Navbar.jsx';
+import FilterSidebar from '../Components/FilterSidebar.jsx';
+import Suggestions from '../Components/Suggestions.jsx';
+import Footer from '../Components/Footer.jsx';
 
-function HomePage() {
+const HomePage = () => {
+    console.log('Rendering HomePage');
+
     return (
         <div className="App d-flex flex-column min-vh-100">
             <Navbar />
@@ -20,6 +22,6 @@ function HomePage() {
             <Footer />
         </div>
     );
-}
+};
 
 export default HomePage;

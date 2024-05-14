@@ -1,20 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './Pages/HomePage.jsx';
+import AuthPage from "./Pages/AuthPage.jsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import App from './App';
-import { Auth0Provider } from '@auth0/auth0-react';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
     <React.StrictMode>
-        <Auth0Provider
-            domain="ivan-p-petrov.eu.auth0.com"
-            clientId="7XAqYVPfmEts4tRSqzeRQCDUII296Z5f"
-            redirectUri={window.location.origin}
-        >
-            <App />
-        </Auth0Provider>
+        <Router>
+            <Routes>
+                <Route path="/auth/*" element={<AuthPage />} />
+                <Route path="/*" element={<HomePage />} />
+            </Routes>
+        </Router>
     </React.StrictMode>
 );
-
-
