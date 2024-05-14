@@ -2,8 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const Register = () => {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -16,10 +16,10 @@ const Register = () => {
 
         try {
             const response = await axios.post('http://localhost:8000/api/User/register', {
-                firstName,
-                lastName,
                 email,
-                password
+                password,
+                name,
+                surname
             });
             console.log(response);
             if (response.status === 200 && response.data.message === "User created") {
@@ -52,22 +52,22 @@ const Register = () => {
             <h2>Register</h2>
             <form onSubmit={handleRegister}>
                 <div className="mb-3">
-                    <label className="form-label">First Name</label>
+                    <label className="form-label">Name</label>
                     <input
                         type="text"
                         className="form-control"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </div>
                 <div className="mb-3">
-                    <label className="form-label">Last Name</label>
+                    <label className="form-label">Surname</label>
                     <input
                         type="text"
                         className="form-control"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        value={surname}
+                        onChange={(e) => setSurname(e.target.value)}
                         required
                     />
                 </div>
