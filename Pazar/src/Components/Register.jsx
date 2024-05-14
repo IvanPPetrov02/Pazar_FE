@@ -15,11 +15,20 @@ const Register = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:8000/api/User/register', { firstName, lastName, email, password });
-            alert('Registration successful! Please log in.');
-            window.location.href = '/auth/login';
+            const response = await axios.post('http://localhost:8000/api/User/register', {
+                firstName,
+                lastName,
+                email,
+                password
+            });
+            if (response.status === 200 && response.data.message === "User created") {
+                alert('Registration successful! Please log in.');
+                window.location.href = '/auth/login';
+            } else {
+                setError('Registration failed. ' + response.data.message);
+            }
         } catch (error) {
-            setError('Registration failed. Please try again.');
+            setError(error.response ? error.response.data.message : 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }
