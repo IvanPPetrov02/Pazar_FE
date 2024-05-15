@@ -4,7 +4,7 @@ const LoginButton = () => {
     const navigate = useNavigate();
 
     const handleLoginRedirect = () => {
-        navigate('/auth/login');
+        navigate('/auth');
     };
 
     return (

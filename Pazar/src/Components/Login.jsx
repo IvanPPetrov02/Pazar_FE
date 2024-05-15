@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import api from './AxiosImport.jsx'; // Ensure this is the correct path to your configured Axios instance
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,19 +15,16 @@ const Login = () => {
 
         try {
             const response = await api.post('/api/User/login', { email, password });
-            localStorage.setItem('token', response.data.token);
+            Cookies.set('jwt', response.data.token); // Set JWT token in cookies
             window.location.href = '/';
         } catch (error) {
             if (error.response) {
-                // The request was made and the server responded with a status code that falls out of the range of 2xx
                 console.error('Error response:', error.response.data);
                 setError(error.response.data.message || 'Login failed. Please check your credentials and try again.');
             } else if (error.request) {
-                // The request was made but no response was received
                 console.error('Error request:', error.request);
                 setError('No response from server. Please try again later.');
             } else {
-                // Something happened in setting up the request that triggered an Error
                 console.error('Error message:', error.message);
                 setError('Login failed. Please check your credentials and try again.');
             }
@@ -35,7 +33,6 @@ const Login = () => {
             setLoading(false);
         }
     };
-
 
     return (
         <div className="container mt-5">
