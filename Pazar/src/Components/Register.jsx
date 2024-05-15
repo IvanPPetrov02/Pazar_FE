@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from './AxiosImport.jsx';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -15,7 +15,7 @@ const Register = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:8000/api/User/register', {
+            const response = await api.post('/api/User/register', {
                 email,
                 password,
                 name,
