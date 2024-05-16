@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import api from '../Services/AxiosImport.jsx'; // Ensure this is the correct path to your configured Axios instance
 import Cookies from 'js-cookie';
+import AuthContext from '../Services/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { setIsLoggedIn } = useContext(AuthContext);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -16,6 +18,7 @@ const Login = () => {
         try {
             const response = await api.post('/api/User/login', { email, password });
             Cookies.set('jwt', response.data.token); // Set JWT token in cookies
+            setIsLoggedIn(true); // Update the authentication state
             window.location.href = '/';
         } catch (error) {
             if (error.response) {
