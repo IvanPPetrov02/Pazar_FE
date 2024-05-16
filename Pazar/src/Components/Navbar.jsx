@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import CategoryMenu from './CategoryMenu';
 import LoginButton from './LoginButton';
 import LogoutButton from './LogoutButton';
 import Cookies from 'js-cookie';
+import AuthContext from '../Services/AuthContext';
 
 const Navbar = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const [searchExpanded, setSearchExpanded] = useState(false);
 
     useEffect(() => {
         // Check if the JWT token exists in cookies
         const token = Cookies.get('jwt');
-        setIsAuthenticated(!!token);
-    }, []);
+        setIsLoggedIn(!!token);
+    }, [setIsLoggedIn]);
 
     const toggleSearch = () => setSearchExpanded(!searchExpanded);
 
@@ -48,7 +49,7 @@ const Navbar = () => {
 
                 {/* Authentication buttons */}
                 <div className="ml-auto" style={{marginRight: '20px'}}>
-                    {isAuthenticated ? <LogoutButton setIsAuthenticated={setIsAuthenticated}/> : <LoginButton/>}
+                    {isLoggedIn ? <LogoutButton/> : <LoginButton/>}
                 </div>
             </nav>
 
