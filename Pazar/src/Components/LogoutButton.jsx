@@ -1,13 +1,15 @@
-import axios from 'axios';
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
+import { useContext } from 'react';
+import AuthContext from '../AuthContext';
 
-const LogoutButton = ({ setIsAuthenticated }) => {
+const LogoutButton = () => {
+    const { setIsLoggedIn } = useContext(AuthContext);
+
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8000/api/User/logout'); // Adjust according to your API endpoint
             Cookies.remove('jwt'); // Remove the JWT cookie
-            setIsAuthenticated(false); // Update the authentication state
+            setIsLoggedIn(false); // Update the authentication state
             window.location.href = '/'; // Redirect to the homepage
         } catch (error) {
             console.error('Logout failed:', error);
@@ -19,10 +21,6 @@ const LogoutButton = ({ setIsAuthenticated }) => {
             Log Out
         </button>
     );
-};
-
-LogoutButton.propTypes = {
-    setIsAuthenticated: PropTypes.func.isRequired,
 };
 
 export default LogoutButton;
