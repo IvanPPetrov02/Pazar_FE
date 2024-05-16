@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import api from './AxiosImport.jsx';
+import api from '../AxiosImport.jsx';
 
 const Register = () => {
     const [name, setName] = useState('');

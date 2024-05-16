@@ -19,16 +19,16 @@ const Navbar = () => {
     return (
         <>
             <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
-                <div className="mr-auto" style={{ marginLeft: '20px' }}>
+                <div className="mr-auto" style={{marginLeft: '20px'}}>
                     <a className="navbar-brand" href="/">
-                        <img src="/Pazar_logo.png" alt="Pazar" style={{ height: '30px' }} />
+                        <img src="/Pazar_logo.png" alt="Pazar" style={{height: '30px'}}/>
                     </a>
                 </div>
 
                 {/* Search and CategoryMenu for large screens */}
                 <div className="mx-auto d-none d-lg-flex align-items-center">
-                    <CategoryMenu />
-                    <div style={{ marginLeft: '20px' }}>
+                    <CategoryMenu/>
+                    <div style={{marginLeft: '20px'}}>
                         {searchExpanded ? (
                             <input
                                 className="form-control"
@@ -40,23 +40,23 @@ const Navbar = () => {
                             />
                         ) : (
                             <button className="btn btn-outline-success" type="button" onClick={toggleSearch}>
-                                <img src="/search.png" alt="Search" style={{ width: '24px' }} />
+                                <img src="/search.png" alt="Search" style={{width: '24px'}}/>
                             </button>
                         )}
                     </div>
                 </div>
 
                 {/* Authentication buttons */}
-                <div className="ml-auto" style={{ marginRight: '20px' }}>
-                    {isAuthenticated ? <LogoutButton setIsAuthenticated={setIsAuthenticated} /> : <LoginButton />}
+                <div className="ml-auto" style={{marginRight: '20px'}}>
+                    {isAuthenticated ? <LogoutButton setIsAuthenticated={setIsAuthenticated}/> : <LoginButton/>}
                 </div>
             </nav>
 
             {/* Search and CategoryMenu for small screens */}
             <div className="d-lg-none text-center">
                 <div className="d-flex justify-content-around align-items-center">
-                    <div style={{ width: '45%' }}>
-                        <CategoryMenu />
+                    <div style={{width: '45%'}}>
+                        <CategoryMenu/>
                     </div>
                     {searchExpanded ? (
                         <input
@@ -68,9 +68,9 @@ const Navbar = () => {
                             autoFocus
                         />
                     ) : (
-                        <div style={{ width: '45%' }}>
+                        <div style={{width: '45%'}}>
                             <button className="btn btn-outline-success" type="button" onClick={toggleSearch}>
-                                <img src="/search.png" alt="Search" style={{ width: '20px' }} />
+                                <img src="/search.png" alt="Search" style={{width: '20px'}}/>
                             </button>
                         </div>
                     )}
@@ -79,5 +79,6 @@ const Navbar = () => {
         </>
     );
 };
+
 
 export default Navbar;
