@@ -7,7 +7,9 @@ import ItemsPage from "./Pages/ItemsPage.jsx";
 import MessagesPage from "./Pages/MessagesPage.jsx";
 import AddItemPage from "./Pages/AddItemPage.jsx";
 import ChatPage from "./Pages/ChatPage.jsx";
-import AuthContext from './AuthContext';
+import AuthContext from './Services/AuthContext.jsx';
+import AuthPage from "./Pages/AuthPage.jsx";
+import LogoutButton from "./Components/LogoutButton.jsx";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,6 +21,10 @@ function App() {
         { path: '/messages', element: <MessagesPage /> },
         { path: '/add-item', element: <AddItemPage /> },
         { path: '/chat/:messageId', element: <ChatPage /> },
+        {path: '/login', element: <AuthPage />},
+        {path: '/logout', element: <LogoutButton />}
+
+
     ]);
 
     return (
