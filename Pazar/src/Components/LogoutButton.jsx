@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import { useContext } from 'react';
-import AuthContext from '../../src/Services/AuthContext.jsx';
+import AuthContext from '../Services/AuthContext';
 
 const LogoutButton = () => {
     const { setIsLoggedIn } = useContext(AuthContext);

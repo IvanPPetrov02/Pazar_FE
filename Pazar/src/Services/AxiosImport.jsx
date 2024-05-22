@@ -2,8 +2,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8080',  // Ensure this matches your API URL
-    withCredentials: true,  // Include credentials if necessary
+    //baseURL: 'http://localhost:8080', //TODO: Change this to the production URL
+    baseURL: 'http://localhost:5190', // For development
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     },
