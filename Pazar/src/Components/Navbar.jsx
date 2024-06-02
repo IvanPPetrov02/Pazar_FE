@@ -1,21 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import CategoryMenu from './CategoryMenu';
 import LoginButton from './LoginButton';
 import LogoutButton from './LogoutButton';
 import Cookies from 'js-cookie';
-import AuthContext from '../Services/AuthContext';
+import useAuth from '../Services/useAuth';
 
 const Navbar = () => {
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-    console.log('Navbar AuthContext:', { isLoggedIn, setIsLoggedIn });
-
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [searchExpanded, setSearchExpanded] = useState(false);
 
+    useAuth(); // Ensure this hook is used
+
     useEffect(() => {
-        // Check if the JWT token exists in cookies
         const token = Cookies.get('jwt');
         setIsLoggedIn(!!token);
-    }, [setIsLoggedIn]);
+    }, []);
 
     const toggleSearch = () => setSearchExpanded(!searchExpanded);
 
@@ -27,8 +26,6 @@ const Navbar = () => {
                         <img src="/Pazar_logo.png" alt="Pazar" style={{ height: '30px' }} />
                     </a>
                 </div>
-
-                {/* Search and CategoryMenu for large screens */}
                 <div className="mx-auto d-none d-lg-flex align-items-center">
                     <CategoryMenu />
                     <div style={{ marginLeft: '20px' }}>
@@ -48,14 +45,10 @@ const Navbar = () => {
                         )}
                     </div>
                 </div>
-
-                {/* Authentication buttons */}
                 <div className="ml-auto" style={{ marginRight: '20px' }}>
-                    {isLoggedIn ? <LogoutButton /> : <LoginButton />}
+                    {isLoggedIn ? <LogoutButton setIsLoggedIn={setIsLoggedIn} /> : <LoginButton />}
                 </div>
             </nav>
-
-            {/* Search and CategoryMenu for small screens */}
             <div className="d-lg-none text-center">
                 <div className="d-flex justify-content-around align-items-center">
                     <div style={{ width: '45%' }}>

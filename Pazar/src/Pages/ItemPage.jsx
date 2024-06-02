@@ -13,7 +13,7 @@ const itemData = {
 };
 
 
-export const ItemPage = () => {
+function ItemPage() {
     return (
         <div className="App d-flex flex-column min-vh-100">
             <Navbar />
@@ -50,3 +50,5 @@ export const ItemPage = () => {
         </div>
     );
 }
+
+export default ItemPage;

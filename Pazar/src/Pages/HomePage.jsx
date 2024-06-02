@@ -2,9 +2,10 @@ import Navbar from '../Components/Navbar.jsx';
 import FilterSidebar from '../Components/FilterSidebar.jsx';
 import Suggestions from '../Components/Suggestions.jsx';
 import Footer from '../Components/Footer.jsx';
+import useAuth from '../Services/useAuth.jsx';
 
 const HomePage = () => {
-    console.log('Rendering HomePage');
+    useAuth();
 
     return (
         <div className="App d-flex flex-column min-vh-100">

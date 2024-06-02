@@ -1,15 +1,18 @@
+import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useContext } from 'react';
-import AuthContext from '../Services/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-const LogoutButton = () => {
-    const { setIsLoggedIn } = useContext(AuthContext);
+const LogoutButton = ({ setIsLoggedIn }) => {
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
+            await axios.post('https://localhost:7267/api/User/Logout', {}, {
+                withCredentials: true,
+            });
             Cookies.remove('jwt'); // Remove the JWT cookie
             setIsLoggedIn(false); // Update the authentication state
-            window.location.href = '/'; // Redirect to the homepage
+            navigate("/");
         } catch (error) {
             console.error('Logout failed:', error);
         }

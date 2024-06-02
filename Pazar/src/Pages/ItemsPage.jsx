@@ -1,4 +1,3 @@
-import React from 'react';
 import Navbar from "../Components/Navbar.jsx";
 import FilterSidebar from "../Components/FilterSidebar.jsx";
 import Items from "../Components/Items.jsx"; // You need to create this component
