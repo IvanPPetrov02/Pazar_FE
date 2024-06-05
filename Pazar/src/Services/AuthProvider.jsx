@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import api from './axiosInstance';
 import TokenManager from './TokenManager';
@@ -7,34 +7,41 @@ const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({
-        user: null,
+        user: TokenManager.getUserInfo(),
         isAuthenticated: !!TokenManager.getAccessToken(),
         loading: false,
     });
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            if (auth.isAuthenticated) {
-                try {
-                    const response = await api.get('/api/User/checkJwtToken');
-                    setAuth({ user: response.data.username, isAuthenticated: true, loading: false });
-                } catch (error) {
-                    setAuth({ user: null, isAuthenticated: false, loading: false });
-                }
-            }
-        };
-
-        checkAuth();
-    }, []);
+    const fetchUserInfo = async (token) => {
+        try {
+            const response = await api.get('/api/User/GetUser', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log('GetUser response:', response.data);
+            const userInfo = {
+                role: response.data.role,
+                isActive: response.data.isActive,
+            };
+            TokenManager.setUserInfo(userInfo);
+            setAuth({ user: userInfo, isAuthenticated: true, loading: false });
+        } catch (error) {
+            console.error('Fetching user info failed:', error);
+            setAuth({ user: null, isAuthenticated: false, loading: false });
+        }
+    };
 
     const login = async (credentials) => {
         setAuth((prevState) => ({ ...prevState, loading: true }));
         try {
             const response = await api.post('/api/User/login', credentials);
             TokenManager.setAccessToken(response.data.token);
-            setAuth({ user: response.data.email, isAuthenticated: true, loading: false });
+            console.log('Login successful, JWT obtained:', response.data.token);
+            await fetchUserInfo(response.data.token);
             window.location.href = '/';
         } catch (error) {
+            console.error('Login failed:', error.message);
             setAuth((prevState) => ({ ...prevState, loading: false }));
             throw error;
         }
@@ -49,8 +56,6 @@ const AuthProvider = ({ children }) => {
             console.error('Logout failed:', error);
         }
     };
-
-    console.log('AuthProvider', { auth });
 
     return (
         <AuthContext.Provider value={{ ...auth, login, logout }}>

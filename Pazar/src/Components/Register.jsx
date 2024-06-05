@@ -21,25 +21,19 @@ const Register = () => {
                 name,
                 surname
             });
-            console.log(response);
             if (response.status === 200 && response.data.message === "User created") {
                 alert('Registration successful! Please log in.');
-                window.location.href = '/auth/login';
+                window.location.href = '/login';
             } else {
                 setError('Registration failed. ' + response.data.message);
             }
         } catch (error) {
             console.error(error);
             if (error.response) {
-                console.error('Response data:', error.response.data);
-                console.error('Response status:', error.response.status);
-                console.error('Response headers:', error.response.headers);
                 setError(error.response.data.message || 'Registration failed. Please try again.');
             } else if (error.request) {
-                console.error('Request data:', error.request);
                 setError('No response from server. Please try again later.');
             } else {
-                console.error('Error message:', error.message);
                 setError('Registration failed. Please try again.');
             }
         } finally {
@@ -48,7 +42,7 @@ const Register = () => {
     };
 
     return (
-        <div className="container mt-5">
+        <div className="mt-5">
             <h2>Register</h2>
             <form onSubmit={handleRegister}>
                 <div className="mb-3">

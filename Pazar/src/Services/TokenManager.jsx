@@ -1,19 +1,19 @@
 const TokenManager = {
     getAccessToken: () => localStorage.getItem("token"),
-    getClaims: () => {
-        const claims = localStorage.getItem("claims");
-        return claims ? JSON.parse(claims) : undefined;
+    getUserInfo: () => {
+        const userInfo = localStorage.getItem("userInfo");
+        return userInfo ? JSON.parse(userInfo) : null;
     },
     setAccessToken: (token) => {
         localStorage.setItem("token", token);
-        // Simplified: not using jwt-decode for now
-        localStorage.setItem("claims", JSON.stringify({ token }));
-        return { token };
+    },
+    setUserInfo: (userInfo) => {
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
     },
     clear: () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("claims");
+        localStorage.removeItem("userInfo");
     }
-}
+};
 
 export default TokenManager;

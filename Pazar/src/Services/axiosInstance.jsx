@@ -1,22 +1,21 @@
 import axios from 'axios';
+import TokenManager from './TokenManager';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5190', // Ensure this URL is correct
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    baseURL: 'http://localhost:5190', // Adjust the base URL as needed
 });
 
 api.interceptors.request.use(
-    config => {
-        const token = localStorage.getItem('token');
+    (config) => {
+        const token = TokenManager.getAccessToken();
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers['Authorization'] = `Bearer ${token}`;
         }
         return config;
     },
-    error => Promise.reject(error)
+    (error) => {
+        return Promise.reject(error);
+    }
 );
 
 export default api;

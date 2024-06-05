@@ -8,9 +8,11 @@ import AddItemPage from './Pages/AddItemPage.jsx';
 import ChatPage from './Pages/ChatPage.jsx';
 import AuthPage from './Pages/AuthPage.jsx';
 import { AuthProvider } from './Services/AuthProvider.jsx';
-import ProtectedRoute from "./Services/ProtectedRoute.jsx";
-import LogoutButton from "./Components/LogoutButton.jsx";
-//import NotFoundPage from './Pages/NotFoundPage.jsx'; // A fallback for undefined routes
+import ProtectedRoute from './Services/ProtectedRoute.jsx';
+import LogoutButton from './Components/LogoutButton.jsx';
+import AdminRoute from "./Services/AdminRoute.jsx";
+import CreateCategoryPage from "./Pages/CreateCategoryPage.jsx";
+// import NotFoundPage from './Pages/NotFoundPage.jsx'; // A fallback for undefined routes
 
 function App() {
     return (
@@ -25,7 +27,8 @@ function App() {
                 <Route path="/chat/:messageId" element={<ChatPage />} />
                 <Route path="/" element={<HomePage />} />
                 <Route path="/logout" element={<ProtectedRoute><LogoutButton /></ProtectedRoute>} />
-                {/*<Route path="*" element={<NotFoundPage />} /> /!* Fallback for undefined routes *!/*/}
+                <Route path="/create-category" element={<AdminRoute><CreateCategoryPage /></AdminRoute>} />
+                {/* <Route path="*" element={<NotFoundPage />} /> {/* Fallback for undefined routes */}
             </Routes>
         </AuthProvider>
     );
