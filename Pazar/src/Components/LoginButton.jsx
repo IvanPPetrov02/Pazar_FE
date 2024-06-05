@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 const LoginButton = () => {
     const navigate = useNavigate();
 
-    const handleLoginRedirect = () => {
+    const handleLogin = () => {
         navigate('/login');
     };
 
     return (
-        <button onClick={handleLoginRedirect} className="btn btn-primary">
-            Log In
+        <button onClick={handleLogin} className="btn btn-primary">
+            Login
         </button>
     );
 };

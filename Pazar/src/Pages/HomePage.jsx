@@ -2,7 +2,7 @@ import Navbar from '../Components/Navbar.jsx';
 import FilterSidebar from '../Components/FilterSidebar.jsx';
 import Suggestions from '../Components/Suggestions.jsx';
 import Footer from '../Components/Footer.jsx';
-import useAuth from '../Services/useAuth.jsx';
+import {useAuth} from '../Services/useAuth.jsx';
 
 const HomePage = () => {
     useAuth();

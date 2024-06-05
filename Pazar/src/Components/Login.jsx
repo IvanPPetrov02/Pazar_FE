@@ -1,32 +1,34 @@
-import { useState, useContext } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import AuthContext from '../Services/useAuth.jsx';
+import React, { useState } from 'react';
+import { useAuth } from '../Services/AuthProvider';
 
 const Login = () => {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
-    const navigate = useNavigate();
-    const {checkJwtToken} = useContext(AuthContext);
+    const { login } = useAuth();
+    const [credentials, setCredentials] = useState({ email: '', password: '' });
 
     const handleChange = (e) => {
-        setCredentials({ ...credentials, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setCredentials({ ...credentials, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('/api/User/login', credentials);
-            checkJwtToken(response.data.token);
-            navigate('/');
+            await login(credentials);
         } catch (error) {
-            console.error('Login failed', error);
+            console.error('Login failed:', error);
         }
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <input name="username" onChange={handleChange} value={credentials.username} />
-            <input name="password" onChange={handleChange} value={credentials.password} type="password" />
+            <div>
+                <label>Email:</label>
+                <input type="email" name="email" value={credentials.email} onChange={handleChange} required />
+            </div>
+            <div>
+                <label>Password:</label>
+                <input type="password" name="password" value={credentials.password} onChange={handleChange} required />
+            </div>
             <button type="submit">Login</button>
         </form>
     );
