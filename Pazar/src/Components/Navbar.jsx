@@ -45,7 +45,7 @@ const Navbar = () => {
                         <>
                             <Link to="/profile" className="btn btn-link">Profile</Link>
                             {user && user.role === 1 && (
-                                <Link to="/create-category" className="btn btn-link">Create Category</Link>
+                                <Link to="/create-category" className="btn btn-link">Manage Categories</Link>
                             )}
                             <button className="btn btn-link" onClick={logout}>Logout</button>
                         </>

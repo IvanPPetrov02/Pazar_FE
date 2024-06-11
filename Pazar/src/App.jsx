@@ -11,7 +11,7 @@ import { AuthProvider } from './Services/AuthProvider.jsx';
 import ProtectedRoute from './Services/ProtectedRoute.jsx';
 import LogoutButton from './Components/LogoutButton.jsx';
 import AdminRoute from "./Services/AdminRoute.jsx";
-import CreateCategoryPage from "./Pages/CreateCategoryPage.jsx";
+import CategoryManagmentPage from "./Pages/CategoryManagmentPage.jsx";
 // import NotFoundPage from './Pages/NotFoundPage.jsx'; // A fallback for undefined routes
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
                 <Route path="/chat/:messageId" element={<ChatPage />} />
                 <Route path="/" element={<HomePage />} />
                 <Route path="/logout" element={<ProtectedRoute><LogoutButton /></ProtectedRoute>} />
-                <Route path="/create-category" element={<AdminRoute><CreateCategoryPage /></AdminRoute>} />
+                <Route path="/create-category" element={<AdminRoute><CategoryManagmentPage /></AdminRoute>} />
                 {/* <Route path="*" element={<NotFoundPage />} /> {/* Fallback for undefined routes */}
             </Routes>
         </AuthProvider>
