@@ -11,6 +11,7 @@ const ItemCreationPage = () => {
     const [itemName, setItemName] = useState('');
     const [description, setDescription] = useState('');
     const [descriptionLength, setDescriptionLength] = useState(0);
+    const [itemNameLenght, setItemNameLength] = useState(0);
     const [price, setPrice] = useState('');
     const [subCategoryId, setSubCategoryId] = useState('');
     const [condition, setCondition] = useState('0'); // LikeNew
@@ -22,6 +23,7 @@ const ItemCreationPage = () => {
     useEffect(() => {
         fetchCategories();
     }, []);
+
 
     const fetchCategories = async () => {
         try {
@@ -37,16 +39,22 @@ const ItemCreationPage = () => {
         setCategoryId(selectedCategoryId);
         const selectedCategory = categories.find(category => category.id === parseInt(selectedCategoryId));
         setSubCategories(selectedCategory ? selectedCategory.subcategories : []);
-        setSubCategoryId(''); // Reset subcategory selection
+        setSubCategoryId('');
     };
 
-    const handleDescriptionChange = (e) => {
+    const handleInputChange = (e, maxLength) => {
         const value = e.target.value;
-        if (value.length <= 300) {
-            setDescription(value);
-            setDescriptionLength(value.length);
+        if (value.length <= maxLength) {
+            if (e.target.id === 'itemName') {
+                setItemName(value);
+                setItemNameLength(value.length);
+            } else if (e.target.id === 'description') {
+                setDescription(value);
+                setDescriptionLength(value.length);
+            }
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,23 +65,26 @@ const ItemCreationPage = () => {
             Name: itemName,
             Description: description,
             Price: bidOnly ? null : price,
-            Images: null, // Set images to null
+            Images: null,
             SubCategoryId: subCategoryId,
-            Condition: parseInt(condition), // Convert to int
+            Condition: parseInt(condition),
             BidOnly: bidOnly,
-            BidDuration: bidOnly ? parseInt(bidDuration) : null, // Convert to int
-            Status: 0, // Set a default value for status if required
-            SellerId: '' // This will be set in the backend
+            BidDuration: bidOnly ? parseInt(bidDuration) : null,
+            Status: 0,
+            SellerId: ''
         };
 
         try {
             await api.post('/api/Item', itemData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`, // Ensure you have token handling logic
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 },
             });
             setSuccess('Item created successfully!');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
         } catch (error) {
             console.error('Error:', error.response ? error.response.data : error.message);
             setError('Failed to create item. Please try again.');
@@ -92,9 +103,12 @@ const ItemCreationPage = () => {
                             type="text"
                             id="itemName"
                             value={itemName}
-                            onChange={(e) => setItemName(e.target.value)}
+                            onChange={(e) => handleInputChange(e, 50)} // Limit to 50 characters
                             required
                         />
+                        <small className="form-text text-muted">
+                            {itemNameLenght}/50 characters
+                        </small>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label htmlFor="description">Description:</Form.Label>
@@ -102,7 +116,7 @@ const ItemCreationPage = () => {
                             as="textarea"
                             id="description"
                             value={description}
-                            onChange={handleDescriptionChange}
+                            onChange={(e) => handleInputChange(e, 300)} // Limit to 300 characters
                             maxLength="300"
                             required
                         />

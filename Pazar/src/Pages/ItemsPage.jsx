@@ -10,10 +10,10 @@ function ItemsPage() {
             <div className="container-fluid flex-grow-1 my-3">
                 <div className="row">
                     <div className="col-md-3">
-                        <FilterSidebar /> {/* This component should be created to handle item filtering */}
+                        <FilterSidebar />
                     </div>
                     <div className="col-md-9">
-                        <Items /> {/* Display items for sale here */}
+                        <Items />
                     </div>
                 </div>
             </div>

@@ -1,32 +1,63 @@
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import api from '../Services/axiosInstance';
+
+const conditionMap = {
+    0: 'Like New',
+    1: 'Used',
+    2: 'Refurbished',
+    3: 'New'
+};
+
 function Items() {
-    // Example items data. You would likely fetch this data from an API in a real app.
-    const items = [
-        { id: 1, name: 'Item 1', description: 'Description for Item 1', price: '$10' },
-        { id: 2, name: 'Item 2', description: 'Description for Item 2', price: '$20' },
-        { id: 3, name: 'Item 3', description: 'Description for Item 3', price: '$30' },
-        // ... more items
-    ];
+    const { categoryId } = useParams();
+    const [items, setItems] = useState([]);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await api.get(`/api/Item/category/${categoryId}`);
+                setItems(response.data);
+            } catch (error) {
+                setError('Failed to fetch items.');
+                console.error('Error fetching items:', error);
+            }
+        };
+
+        fetchItems();
+    }, [categoryId]);
+
+    if (error) {
+        return <p className="text-danger">{error}</p>;
+    }
 
     return (
-        <div>
+        <section className="items-list p-3">
             <h2>Items for Sale</h2>
+            {error && <p className="text-danger">{error}</p>}
             <div className="row">
                 {items.map((item) => (
-                    <div key={item.id} className="col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div key={item.id} className="col-md-4 mb-3">
                         <div className="card">
-                            <img src={`/path/to/item/images/${item.id}.jpg`} className="card-img-top" alt={item.name} />
                             <div className="card-body">
-                                <h5 className="card-title">{item.name}</h5>
-                                <p className="card-text">{item.description}</p>
-                                <div className="card-footer">
-                                    <small className="text-muted">{item.price}</small>
-                                </div>
+                                <h5 className="card-title text-truncate">{item.name}</h5>
+                                <p className="card-text text-truncate">{item.description}</p>
+                                <p className="card-text">
+                                    <strong>Price:</strong> {item.bidOnly ? 'Biddable' : item.price ? `€${item.price}` : 'Free'}
+                                </p>
+                                <p className="card-text">
+                                    <strong>Condition:</strong> {conditionMap[item.condition]}
+                                </p>
+                                <Link to={`/item/${item.id}`} className="btn btn-primary">
+                                    View Details
+                                </Link>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
-        </div>
+        </section>
     );
 }
 

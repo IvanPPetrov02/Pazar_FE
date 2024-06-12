@@ -19,7 +19,7 @@ const ItemsList = () => {
 
     const fetchItems = async () => {
         try {
-            const response = await api.get('/api/Item');
+            const response = await api.get('api/Item/filtered');
             setItems(response.data);
         } catch (error) {
             setError('Failed to fetch items.');
@@ -36,10 +36,10 @@ const ItemsList = () => {
                     <div key={item.id} className="col-md-4 mb-3">
                         <div className="card">
                             <div className="card-body">
-                                <h5 className="card-title">{item.name}</h5>
-                                <p className="card-text">{item.description}</p>
+                                <h5 className="card-title text-truncate">{item.name}</h5>
+                                <p className="card-text text-truncate">{item.description}</p>
                                 <p className="card-text">
-                                    <strong>Price:</strong> {item.price ? `€${item.price}` : 'Free'}
+                                    <strong>Price:</strong> {item.bidOnly ? 'Biddable' : item.price ? `€${item.price}` : 'Free'}
                                 </p>
                                 <p className="card-text">
                                     <strong>Condition:</strong> {conditionMap[item.condition]}

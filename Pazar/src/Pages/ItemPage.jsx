@@ -181,7 +181,7 @@ const ItemPage = () => {
                             <>
                                 <p>Bid Duration: {bidDurationMap[item.bidDuration]}</p>
                                 <p>Time Left: {remainingTime}</p>
-                                {!isBiddingEnded && (
+                                {!isSeller && !isBiddingEnded && (
                                     <Form>
                                         <Form.Group>
                                             <Form.Label>Bid Amount</Form.Label>
