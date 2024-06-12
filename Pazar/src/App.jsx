@@ -12,14 +12,14 @@ import ProtectedRoute from './Services/ProtectedRoute.jsx';
 import LogoutButton from './Components/LogoutButton.jsx';
 import AdminRoute from "./Services/AdminRoute.jsx";
 import CategoryManagmentPage from "./Pages/CategoryManagmentPage.jsx";
-// import NotFoundPage from './Pages/NotFoundPage.jsx'; // A fallback for undefined routes
+import ItemCreationPage from "./Pages/ItemCreationPage.jsx";
 
 function App() {
     return (
         <AuthProvider>
             <Routes>
                 <Route path="/login" element={<AuthPage />} />
-                <Route path="/categories/:categoryId/items/:itemId" element={<ItemPage />} />
+                <Route path="/item/:id" element={<ItemPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
                 <Route path="/categories/:categoryId/items" element={<ItemsPage />} />
                 <Route path="/messages" element={<MessagesPage />} />
@@ -27,7 +27,8 @@ function App() {
                 <Route path="/chat/:messageId" element={<ChatPage />} />
                 <Route path="/" element={<HomePage />} />
                 <Route path="/logout" element={<ProtectedRoute><LogoutButton /></ProtectedRoute>} />
-                <Route path="/create-category" element={<AdminRoute><CategoryManagmentPage /></AdminRoute>} />
+                <Route path="/category-management" element={<AdminRoute><CategoryManagmentPage /></AdminRoute>} />
+                <Route path="/create-item" element={<ProtectedRoute><ItemCreationPage /></ProtectedRoute>} />
                 {/* <Route path="*" element={<NotFoundPage />} /> {/* Fallback for undefined routes */}
             </Routes>
         </AuthProvider>

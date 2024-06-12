@@ -1,8 +1,9 @@
 import Navbar from '../Components/Navbar.jsx';
 import FilterSidebar from '../Components/FilterSidebar.jsx';
 import Suggestions from '../Components/Suggestions.jsx';
+import ItemsList from '../Components/ItemsList.jsx';
 import Footer from '../Components/Footer.jsx';
-import {useAuth} from '../Services/useAuth.jsx';
+import { useAuth } from '../Services/useAuth.jsx';
 
 const HomePage = () => {
     useAuth();
@@ -17,6 +18,7 @@ const HomePage = () => {
                     </div>
                     <div className="col-md-9">
                         <Suggestions />
+                        <ItemsList />
                     </div>
                 </div>
             </div>
