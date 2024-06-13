@@ -17,8 +17,14 @@ function Items() {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await api.get(`/api/Item/category/${categoryId}`);
+                let response = await api.get(`/api/Item/category/${categoryId}`);
+                if (response.data.length === 0) {
+                    response = await api.get(`/api/Item/subcategory/${categoryId}`);
+                }
                 setItems(response.data);
+                if (response.data.length === 0) {
+                    setError('Currently no items available in this category.');
+                }
             } catch (error) {
                 setError('Failed to fetch items.');
                 console.error('Error fetching items:', error);

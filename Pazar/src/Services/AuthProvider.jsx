@@ -52,6 +52,7 @@ const AuthProvider = ({ children }) => {
             await api.post('/api/User/logout');
             TokenManager.clear();
             setAuth({ user: null, isAuthenticated: false, loading: false });
+            window.location.href = '/';
         } catch (error) {
             console.error('Logout failed:', error);
         }

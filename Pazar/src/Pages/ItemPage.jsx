@@ -80,9 +80,22 @@ const ItemPage = () => {
         navigate(`/edit-item/${id}`);
     };
 
-    const handleArchive = () => {
-        // Implement archive functionality
-        console.log('Archive item');
+    const handleRemoveOffer = async () => {
+        const confirmDelete = window.confirm('Are you sure you want to remove this offer?');
+        if (confirmDelete) {
+            try {
+                await api.delete(`/api/Item/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                alert('Offer successfully removed.');
+                navigate('/'); // Redirect to home page or any other page
+            } catch (error) {
+                console.error('Error removing offer:', error);
+                alert('Failed to remove offer.');
+            }
+        }
     };
 
     const calculateRemainingTime = (createdAt, bidDuration) => {
@@ -203,7 +216,7 @@ const ItemPage = () => {
                         {isSeller ? (
                             <>
                                 <Button variant="warning" className="mt-2" onClick={handleEdit}>Edit Offer</Button>
-                                <Button variant="danger" className="mt-2" onClick={handleArchive}>Archive Offer</Button>
+                                <Button variant="danger" className="mt-2" onClick={handleRemoveOffer}>Remove Offer</Button>
                             </>
                         ) : (
                             item.status !== 0 && (!item.bidOnly || (item.bidOnly && !isBiddingEnded)) && (
