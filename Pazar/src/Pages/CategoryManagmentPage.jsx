@@ -124,7 +124,17 @@ const CategoryManagementPage = () => {
                                 <li key={category.id} className="list-group-item">
                                     <div className="d-flex justify-content-between align-items-center">
                                         <span onClick={() => toggleCategory(category.id)} style={{ cursor: 'pointer', flexGrow: 1 }}>
-                                            <img src={arrowIcon} alt="Expand" className="me-2" style={{ width: '16px', height: '16px' }} />
+                                            <img
+                                                src={arrowIcon}
+                                                alt="Expand"
+                                                className="me-2"
+                                                style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    transform: expandedCategories[category.id] ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                    transition: 'transform 0.3s'
+                                                }}
+                                            />
                                             {category.name}
                                         </span>
                                         <div>
@@ -185,8 +195,7 @@ const CategoryManagementPage = () => {
                                         className="form-control"
                                         value={selectedParentCategory}
                                         onChange={handleParentCategoryChange}
-                                        required
-                                    >
+                                        required>
                                         <option value="">Select a parent category</option>
                                         {categories.map((category) => (
                                             <option key={category.id} value={category.id}>

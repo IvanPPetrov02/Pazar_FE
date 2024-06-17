@@ -20,6 +20,7 @@ const ItemsList = () => {
     const fetchItems = async () => {
         try {
             const response = await api.get('api/Item/filtered');
+            console.log('Fetched items:', response.data); // Log response data
             setItems(response.data);
         } catch (error) {
             setError('Failed to fetch items.');
@@ -32,25 +33,29 @@ const ItemsList = () => {
             <h2>Items for Sale</h2>
             {error && <p className="text-danger">{error}</p>}
             <div className="row">
-                {items.map((item) => (
-                    <div key={item.id} className="col-md-4 mb-3">
-                        <div className="card">
-                            <div className="card-body">
-                                <h5 className="card-title text-truncate">{item.name}</h5>
-                                <p className="card-text text-truncate">{item.description}</p>
-                                <p className="card-text">
-                                    <strong>Price:</strong> {item.bidOnly ? 'Biddable' : item.price ? `€${item.price}` : 'Free'}
-                                </p>
-                                <p className="card-text">
-                                    <strong>Condition:</strong> {conditionMap[item.condition]}
-                                </p>
-                                <Link to={`/item/${item.id}`} className="btn btn-primary">
-                                    View Details
-                                </Link>
+                {items.length > 0 ? (
+                    items.map((item) => (
+                        <div key={item.id} className="col-md-4 mb-3">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h5 className="card-title text-truncate">{item.name}</h5>
+                                    <p className="card-text text-truncate">{item.description}</p>
+                                    <p className="card-text">
+                                        <strong>Price:</strong> {item.bidOnly ? 'Biddable' : item.price ? `€${item.price}` : 'Free'}
+                                    </p>
+                                    <p className="card-text">
+                                        <strong>Condition:</strong> {conditionMap[item.condition]}
+                                    </p>
+                                    <Link to={`/item/${item.id}`} className="btn btn-primary">
+                                        View Details
+                                    </Link>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p>No items available.</p>
+                )}
             </div>
         </section>
     );

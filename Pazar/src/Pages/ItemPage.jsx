@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Container, Row, Col, Card, Form, InputGroup } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card, Form, InputGroup, Alert, ListGroup } from 'react-bootstrap';
 import Navbar from "../Components/Navbar.jsx";
 import api from '../Services/axiosInstance';
 
@@ -35,25 +35,37 @@ const ItemPage = () => {
     const [error, setError] = useState('');
     const [bidAmount, setBidAmount] = useState('');
     const [isSeller, setIsSeller] = useState(false);
+    const [bids, setBids] = useState([]);
+    const [bidError, setBidError] = useState('');
+    const webSocket = useRef(null);
 
     useEffect(() => {
-        console.log(`useParams id: ${id}`);
         if (id) {
             fetchItem();
             checkIfUserIsSeller();
         } else {
             setError('Invalid item ID.');
         }
+
+        return () => {
+            if (webSocket.current) {
+                webSocket.current.close();
+            }
+        };
     }, [id]);
+
+    useEffect(() => {
+        if (item) {
+            fetchBids();
+            initializeWebSocket();
+        }
+    }, [item]);
 
     const fetchItem = async () => {
         try {
-            console.log(`Fetching item with ID: ${id}`);
             const response = await api.get(`/api/Item/${id}`);
-            console.log('Fetched item data:', response.data);
             setItem(response.data);
         } catch (error) {
-            console.error('Error fetching item details:', error);
             setError(`Failed to fetch item details. ${error.response ? error.response.data.message : ''}`);
         }
     };
@@ -71,9 +83,59 @@ const ItemPage = () => {
         }
     };
 
-    const handleBid = () => {
-        // Implement bid functionality
-        console.log(`Bid amount: €${bidAmount}`);
+    const fetchBids = async () => {
+        try {
+            const response = await api.get(`/ws/ItemBidding/bids/${id}`);
+            setBids(response.data);
+            console.log('Bids fetched:', response.data); // Debugging line
+        } catch (error) {
+            console.error('Error fetching bids:', error);
+        }
+    };
+
+    const initializeWebSocket = () => {
+        webSocket.current = new WebSocket(`ws://localhost:5190/ws/ItemBidding`);
+        webSocket.current.onopen = () => {
+            console.log('WebSocket connection established');
+            webSocket.current.send(JSON.stringify({ itemId: id }));
+        };
+        webSocket.current.onmessage = (message) => {
+            try {
+                const updatedBids = JSON.parse(message.data);
+                setBids(updatedBids);
+                console.log('WebSocket message received:', updatedBids); // Debugging line
+            } catch (error) {
+                console.error('Error parsing WebSocket message data:', error);
+            }
+        };
+        webSocket.current.onclose = () => {
+            console.log('WebSocket connection closed. Reconnecting...');
+            setTimeout(initializeWebSocket, 1000);
+        };
+        webSocket.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    };
+
+    const handleBid = async () => {
+        setBidError('');
+        try {
+            await api.post(`/ws/ItemBidding/newbid`, {
+                itemID: id,
+                bid: parseFloat(bidAmount)
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            setBidAmount('');
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.Message) {
+                setBidError(error.response.data.Message);
+            } else {
+                setBidError('Failed to place bid.');
+            }
+        }
     };
 
     const handleEdit = () => {
@@ -92,7 +154,6 @@ const ItemPage = () => {
                 alert('Offer successfully removed.');
                 navigate('/'); // Redirect to home page or any other page
             } catch (error) {
-                console.error('Error removing offer:', error);
                 alert('Failed to remove offer.');
             }
         }
@@ -138,30 +199,14 @@ const ItemPage = () => {
         }
     };
 
-    if (error) {
-        return (
-            <div className="App d-flex flex-column min-vh-100">
-                <Navbar />
-                <Container className="my-5">
-                    <p className="text-danger">{error}</p>
-                </Container>
-            </div>
-        );
-    }
+    const getHighestBid = () => {
+        return bids.length > 0 ? Math.max(...bids.map(bid => bid.Bid)) : 0;
+    };
 
-    if (!item) {
-        return (
-            <div className="App d-flex flex-column min-vh-100">
-                <Navbar />
-                <Container className="my-5">
-                    <p>Loading...</p>
-                </Container>
-            </div>
-        );
-    }
-
-    const remainingTime = item.bidOnly ? calculateRemainingTime(item.createdAt, item.bidDuration) : null;
-    const isBiddingEnded = remainingTime === 'Bidding ended';
+    const getMinBid = () => {
+        const highestBid = getHighestBid();
+        return highestBid ? (highestBid + 1).toString() : '1';
+    };
 
     return (
         <div className="App d-flex flex-column min-vh-100">
@@ -170,10 +215,10 @@ const ItemPage = () => {
                 <Row className="my-5">
                     <Col md={6}>
                         <Card>
-                            <Card.Img variant="top" src={item.images[0] || '/path/to/default-image.jpg'} />
+                            <Card.Img variant="top" src={item?.images[0] || '/path/to/default-image.jpg'} />
                         </Card>
                         <Row className="mt-3">
-                            {item.images.slice(1).map((image, index) => (
+                            {item?.images.slice(1).map((image, index) => (
                                 <Col key={index} xs={6} md={4}>
                                     <Card>
                                         <Card.Img variant="top" src={image} />
@@ -183,18 +228,32 @@ const ItemPage = () => {
                         </Row>
                     </Col>
                     <Col md={6}>
-                        <h2>{item.name}</h2>
-                        <p>{item.description}</p>
-                        {!item.bidOnly && <h3>€{item.price}</h3>}
-                        <p>Condition: {conditionMap[item.condition]}</p>
-                        <p>Status: {statusMap[item.status]}</p>
-                        <p>Date listed: {new Date(item.createdAt).toLocaleDateString()}</p>
-                        <p>Seller: {item.seller.name} {item.seller.surname}</p>
-                        {item.bidOnly && (
+                        <h2>{item?.name}</h2>
+                        <p>{item?.description}</p>
+                        {!item?.bidOnly && <h3>€{item?.price}</h3>}
+                        <p>Condition: {conditionMap[item?.condition]}</p>
+                        <p>Status: {statusMap[item?.status]}</p>
+                        <p>Date listed: {new Date(item?.createdAt).toLocaleDateString()}</p>
+                        <p>Seller: {item?.seller.name} {item?.seller.surname}</p>
+                        {item?.bidOnly && (
                             <>
-                                <p>Bid Duration: {bidDurationMap[item.bidDuration]}</p>
-                                <p>Time Left: {remainingTime}</p>
-                                {!isSeller && !isBiddingEnded && (
+                                <p>Bid Duration: {bidDurationMap[item?.bidDuration]}</p>
+                                <p>Time Left: {calculateRemainingTime(item?.createdAt, item?.bidDuration)}</p>
+                                <h3>Bids:</h3>
+                                {bids.length > 0 ? (
+                                    <ListGroup style={{ maxHeight: '200px', overflowY: 'scroll' }}>
+                                        {bids
+                                            .sort((a, b) => new Date(b.BidTime) - new Date(a.BidTime))
+                                            .map((bid, index) => (
+                                                <ListGroup.Item key={index}>
+                                                    {bid.BidderName}: €{bid.Bid}
+                                                </ListGroup.Item>
+                                            ))}
+                                    </ListGroup>
+                                ) : (
+                                    <p>No bids yet.</p>
+                                )}
+                                {!isSeller && calculateRemainingTime(item?.createdAt, item?.bidDuration) !== 'Bidding ended' && (
                                     <Form>
                                         <Form.Group>
                                             <Form.Label>Bid Amount</Form.Label>
@@ -204,9 +263,10 @@ const ItemPage = () => {
                                                     type="number"
                                                     value={bidAmount}
                                                     onChange={(e) => setBidAmount(e.target.value)}
-                                                    min="0"
+                                                    min={getMinBid()}
                                                 />
                                             </InputGroup>
+                                            {bidError && <Alert variant="danger" className="mt-2">{bidError}</Alert>}
                                         </Form.Group>
                                         <Button variant="primary" onClick={handleBid} className="mt-2">Place Bid</Button>
                                     </Form>
@@ -219,7 +279,7 @@ const ItemPage = () => {
                                 <Button variant="danger" className="mt-2" onClick={handleRemoveOffer}>Remove Offer</Button>
                             </>
                         ) : (
-                            item.status !== 0 && (!item.bidOnly || (item.bidOnly && !isBiddingEnded)) && (
+                            item?.status !== 0 && (!item?.bidOnly || (item?.bidOnly && calculateRemainingTime(item?.createdAt, item?.bidDuration) !== 'Bidding ended')) && (
                                 <Button variant="secondary" className="mt-2">Message Seller</Button>
                             )
                         )}
