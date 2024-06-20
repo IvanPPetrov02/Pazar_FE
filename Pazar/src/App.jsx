@@ -1,10 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import HomePage from './Pages/HomePage.jsx';
 import ItemPage from './Pages/ItemPage.jsx';
-import CategoriesPage from './Pages/CategoriesPage.jsx';
 import ItemsPage from './Pages/ItemsPage.jsx';
 import MessagesPage from './Pages/MessagesPage.jsx';
-import AddItemPage from './Pages/AddItemPage.jsx';
 import ChatPage from './Pages/ChatPage.jsx';
 import AuthPage from './Pages/AuthPage.jsx';
 import { AuthProvider } from './Services/AuthProvider.jsx';
@@ -13,18 +11,17 @@ import LogoutButton from './Components/LogoutButton.jsx';
 import AdminRoute from "./Services/AdminRoute.jsx";
 import CategoryManagmentPage from "./Pages/CategoryManagmentPage.jsx";
 import ItemCreationPage from "./Pages/ItemCreationPage.jsx";
+import PublicRoute from './Services/PublicRoute.jsx'; // Import the new component
 
 function App() {
     return (
         <AuthProvider>
             <Routes>
-                <Route path="/login" element={<AuthPage />} />
+                <Route path="/login" element={<PublicRoute><AuthPage /></PublicRoute>} />
                 <Route path="/item/:id" element={<ItemPage />} />
-                <Route path="/categories" element={<CategoriesPage />} />
                 <Route path="/categories/:categoryId/items" element={<ItemsPage />} />
                 <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/add-item" element={<ProtectedRoute><AddItemPage /></ProtectedRoute>} />
-                <Route path="/chat/:messageId" element={<ChatPage />} />
+                <Route path="/chat/:id" element={<ChatPage />} />
                 <Route path="/" element={<HomePage />} />
                 <Route path="/logout" element={<ProtectedRoute><LogoutButton /></ProtectedRoute>} />
                 <Route path="/category-management" element={<AdminRoute><CategoryManagmentPage /></AdminRoute>} />

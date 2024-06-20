@@ -11,7 +11,7 @@ const ItemCreationPage = () => {
     const [itemName, setItemName] = useState('');
     const [description, setDescription] = useState('');
     const [descriptionLength, setDescriptionLength] = useState(0);
-    const [itemNameLenght, setItemNameLength] = useState(0);
+    const [itemNameLength, setItemNameLength] = useState(0);
     const [price, setPrice] = useState('');
     const [subCategoryId, setSubCategoryId] = useState('');
     const [condition, setCondition] = useState('0'); // LikeNew
@@ -23,7 +23,6 @@ const ItemCreationPage = () => {
     useEffect(() => {
         fetchCategories();
     }, []);
-
 
     const fetchCategories = async () => {
         try {
@@ -55,6 +54,12 @@ const ItemCreationPage = () => {
         }
     };
 
+    const handleBidOnlyChange = (e) => {
+        setBidOnly(e.target.checked);
+        if (e.target.checked) {
+            setPrice(''); // Clear the price if bid only is checked
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -82,9 +87,7 @@ const ItemCreationPage = () => {
                 },
             });
             setSuccess('Item created successfully!');
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 2000);
+            window.location.href = '/';
         } catch (error) {
             console.error('Error:', error.response ? error.response.data : error.message);
             setError('Failed to create item. Please try again.');
@@ -107,7 +110,7 @@ const ItemCreationPage = () => {
                             required
                         />
                         <small className="form-text text-muted">
-                            {itemNameLenght}/50 characters
+                            {itemNameLength}/50 characters
                         </small>
                     </Form.Group>
                     <Form.Group>
@@ -198,7 +201,7 @@ const ItemCreationPage = () => {
                             id="bidOnly"
                             label="Bid Only"
                             checked={bidOnly}
-                            onChange={(e) => setBidOnly(e.target.checked)}
+                            onChange={handleBidOnlyChange}
                         />
                     </Form.Group>
                     {bidOnly && (

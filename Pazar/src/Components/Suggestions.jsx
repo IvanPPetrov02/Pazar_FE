@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link
+import { useNavigate } from 'react-router-dom';
 import Slider from "react-slick";
 import api from "../Services/axiosInstance.jsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import arrowIcon from "../../public/arrowIcon.png";
 
 function Suggestions() {
     const [subCategories, setSubCategories] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-
         const fetchSubCategories = async () => {
             try {
-                const response = await api.get('/api/Category/GetRandomSubCategories'); // Updated endpoint
+                const response = await api.get('/api/Category/GetRandomSubCategories');
                 setSubCategories(response.data);
             } catch (error) {
                 console.error('Failed to fetch subcategories:', error);
@@ -28,20 +29,69 @@ function Suggestions() {
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: true,
-        prevArrow: <button type="button" className="slick-next" style={{ color: 'white', backgroundColor: 'black', position: 'absolute', top: '50%', left: '-2%' }}>Next</button>, // Updated styles
-        nextArrow: <button type="button" className="slick-prev" style={{ color: 'white', backgroundColor: 'black', position: 'absolute', top: '50%', right: '-2%' }}>Prev</button>  // Updated styles
+        autoplay: true,
+        autoplaySpeed: 3000,
+        prevArrow: (
+            <div
+                style={{
+                    position: 'absolute',
+                    left: '-25px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer'
+                }}
+            >
+                <img
+                    src={arrowIcon}
+                    alt="Previous"
+                    style={{
+                        transform: 'rotate(90deg)',
+                        width: '20px',
+                        height: '20px',
+                    }}
+                />
+            </div>
+        ),
+        nextArrow: (
+            <div
+                style={{
+                    position: 'absolute',
+                    right: '-25px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer'
+                }}
+            >
+                <img
+                    src={arrowIcon}
+                    alt="Next"
+                    style={{
+                        transform: 'rotate(-90deg)',
+                        width: '20px',
+                        height: '20px',
+                    }}
+                />
+            </div>
+        )
+    };
+
+    const handleNavigation = (subCategoryId) => {
+        navigate(`/categories/${subCategoryId}/items`);
     };
 
     return (
         <section className="suggestions p-3">
             <h2>Suggested Sub-categories</h2>
-            <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}> {/* Add position: 'relative' */}
+            <div className="container" style={{ maxWidth: '600px', margin: '0 auto', position: 'relative' }}>
                 <Slider {...settings}>
                     {subCategories.map((subCategory, index) => (
-                        <div key={index}>
-                            <Link to={`/categories/${subCategory.id}/items`}> {/* Add this Link */}
-                                <h3>{subCategory.name}</h3> {/* Access the name property of the subCategory object */}
-                            </Link>
+                        <div
+                            key={index}
+                            className="text-center"
+                            style={{ cursor: 'pointer', padding: '10px' }}
+                            onClick={() => handleNavigation(subCategory.id)}
+                        >
+                            <h3>{subCategory.name}</h3>
                         </div>
                     ))}
                 </Slider>

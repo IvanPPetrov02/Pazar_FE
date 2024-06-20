@@ -48,7 +48,6 @@ function Items() {
                         <div className="card">
                             <div className="card-body">
                                 <h5 className="card-title text-truncate">{item.name}</h5>
-                                <p className="card-text text-truncate">{item.description}</p>
                                 <p className="card-text">
                                     <strong>Price:</strong> {item.bidOnly ? 'Biddable' : item.price ? `€${item.price}` : 'Free'}
                                 </p>

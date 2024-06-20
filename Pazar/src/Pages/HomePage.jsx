@@ -4,6 +4,7 @@ import Suggestions from '../Components/Suggestions.jsx';
 import ItemsList from '../Components/ItemsList.jsx';
 import Footer from '../Components/Footer.jsx';
 import { useAuth } from '../Services/useAuth.jsx';
+import ChatList from "../Components/ChatList.jsx";
 
 const HomePage = () => {
     useAuth();
@@ -16,9 +17,12 @@ const HomePage = () => {
                     <div className="col-md-3">
                         <FilterSidebar />
                     </div>
-                    <div className="col-md-9">
+                    <div className="col-md-6">
                         <Suggestions />
                         <ItemsList />
+                    </div>
+                    <div className="col-md-3">
+                        <ChatList />
                     </div>
                 </div>
             </div>

@@ -35,19 +35,23 @@ const CategoryManagementPage = () => {
     };
 
     const deleteItem = async (id, type) => {
-        try {
-            await api.delete(`/api/Category/${id}`);
-            if (type === 'Category') {
-                setCategories(categories.filter(category => category.id !== id));
-            } else {
-                const updatedCategories = categories.map(category => ({
-                    ...category,
-                    subcategories: category.subcategories.filter(sub => sub.id !== id)
-                }));
-                setCategories(updatedCategories);
+        const confirmDelete = window.confirm('Are you sure you want to delete this category?');
+        if (!confirmDelete) {
+            try {
+                await api.delete(`/api/Category/${id}`);
+                if (type === 'Category') {
+                    setCategories(categories.filter(category => category.id !== id));
+                } else {
+                    const updatedCategories = categories.map(category => ({
+                        ...category,
+                        subcategories: category.subcategories.filter(sub => sub.id !== id)
+                    }));
+                    setCategories(updatedCategories);
+                }
+                alert('Category successfully deleted.');
+            } catch (error) {
+                console.error(`Failed to delete ${type.toLowerCase()}:`, error);
             }
-        } catch (error) {
-            console.error(`Failed to delete ${type.toLowerCase()}:`, error);
         }
     };
 
