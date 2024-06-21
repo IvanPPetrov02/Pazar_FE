@@ -11,16 +11,16 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
+            <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between" data-testid="navbar">
                 <div className="mr-auto" style={{ marginLeft: '20px' }}>
-                    <a className="navbar-brand" href="/">
+                    <a className="navbar-brand" href="/" data-testid="logo">
                         <img src="/Pazar_logo.png" alt="Pazar" style={{ height: '30px' }} />
                     </a>
                 </div>
 
                 {/* Search and CategoryMenu for large screens */}
                 <div className="mx-auto d-none d-lg-flex align-items-center">
-                    <CategoryMenu />
+                    <CategoryMenu data-testid="category-menu" />
                     <div style={{ marginLeft: '20px' }}>
                         {searchExpanded ? (
                             <input
@@ -30,9 +30,10 @@ const Navbar = () => {
                                 aria-label="Search"
                                 onBlur={() => setSearchExpanded(false)}
                                 autoFocus
+                                data-testid="search-input"
                             />
                         ) : (
-                            <button className="btn btn-outline-success" type="button" onClick={toggleSearch}>
+                            <button className="btn btn-outline-success" type="button" onClick={toggleSearch} data-testid="search-button">
                                 <img src="/search.png" alt="Search" style={{ width: '24px' }} />
                             </button>
                         )}
@@ -43,15 +44,15 @@ const Navbar = () => {
                 <div className="ml-auto" style={{ marginRight: '20px' }}>
                     {isAuthenticated ? (
                         <>
-                            <Link to="/profile" className="btn btn-link">Profile</Link>
+                            <Link to="/profile" className="btn btn-link" data-testid="profile-button">Profile</Link>
                             {user && user.role === 1 && (
-                                <Link to="/category-management" className="btn btn-link">Manage Categories</Link>
+                                <Link to="/category-management" className="btn btn-link" data-testid="category-management-button">Manage Categories</Link>
                             )}
-                            <Link to="/create-item" className="btn btn-link">Add Item for sale</Link>
-                            <button className="btn btn-link" onClick={logout}>Logout</button>
+                            <Link to="/create-item" className="btn btn-link" data-testid="create-item-button">Add Item for sale</Link>
+                            <button className="btn btn-link" onClick={logout} data-testid="logout-button">Logout</button>
                         </>
                     ) : (
-                        <Link to="/login" className="btn btn-link">Login</Link>
+                        <Link to="/login" className="btn btn-link" data-testid="login-button">Login</Link>
                     )}
                 </div>
             </nav>
@@ -60,7 +61,7 @@ const Navbar = () => {
             <div className="d-lg-none text-center">
                 <div className="d-flex justify-content-around align-items-center">
                     <div style={{ width: '45%' }}>
-                        <CategoryMenu />
+                        <CategoryMenu data-testid="category-menu-mobile" />
                     </div>
                     {searchExpanded ? (
                         <input
@@ -70,10 +71,11 @@ const Navbar = () => {
                             aria-label="Search"
                             onBlur={() => setSearchExpanded(false)}
                             autoFocus
+                            data-testid="search-input-mobile"
                         />
                     ) : (
                         <div style={{ width: '45%' }}>
-                            <button className="btn btn-outline-success" type="button" onClick={toggleSearch}>
+                            <button className="btn btn-outline-success" type="button" onClick={toggleSearch} data-testid="search-button-mobile">
                                 <img src="/search.png" alt="Search" style={{ width: '20px' }} />
                             </button>
                         </div>

@@ -40,6 +40,7 @@ function Suggestions() {
                     transform: 'translateY(-50%)',
                     cursor: 'pointer'
                 }}
+                data-testid="prev-arrow"
             >
                 <img
                     src={arrowIcon}
@@ -61,6 +62,7 @@ function Suggestions() {
                     transform: 'translateY(-50%)',
                     cursor: 'pointer'
                 }}
+                data-testid="next-arrow"
             >
                 <img
                     src={arrowIcon}
@@ -80,7 +82,7 @@ function Suggestions() {
     };
 
     return (
-        <section className="suggestions p-3">
+        <section className="suggestions p-3" data-testid="suggestions">
             <h2>Suggested Sub-categories</h2>
             <div className="container" style={{ maxWidth: '600px', margin: '0 auto', position: 'relative' }}>
                 <Slider {...settings}>
@@ -90,6 +92,7 @@ function Suggestions() {
                             className="text-center"
                             style={{ cursor: 'pointer', padding: '10px' }}
                             onClick={() => handleNavigation(subCategory.id)}
+                            data-testid={`subcategory-${subCategory.id}`}
                         >
                             <h3>{subCategory.name}</h3>
                         </div>

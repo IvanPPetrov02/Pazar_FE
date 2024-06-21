@@ -29,13 +29,13 @@ const ItemsList = () => {
     };
 
     return (
-        <section className="items-list p-3">
+        <section className="items-list p-3" data-testid="items-list">
             <h2>Items for Sale</h2>
-            {error && <p className="text-danger">{error}</p>}
+            {error && <p className="text-danger" data-testid="items-error">{error}</p>}
             <div className="row">
                 {items.length > 0 ? (
                     items.map((item) => (
-                        <div key={item.id} className="col-md-4 mb-3">
+                        <div key={item.id} className="col-md-4 mb-3" data-testid={`item-${item.id}`}>
                             <div className="card">
                                 <div className="card-body">
                                     <h5 className="card-title text-truncate">{item.name}</h5>
@@ -45,7 +45,7 @@ const ItemsList = () => {
                                     <p className="card-text">
                                         <strong>Condition:</strong> {conditionMap[item.condition]}
                                     </p>
-                                    <Link to={`/item/${item.id}`} className="btn btn-primary">
+                                    <Link to={`/item/${item.id}`} className="btn btn-primary" data-testid={`view-details-${item.id}`}>
                                         View Details
                                     </Link>
                                 </div>
@@ -53,7 +53,7 @@ const ItemsList = () => {
                         </div>
                     ))
                 ) : (
-                    <p>No items available.</p>
+                    <p data-testid="no-items-message">No items available.</p>
                 )}
             </div>
         </section>

@@ -3,15 +3,35 @@ import { useNavigate } from 'react-router-dom';
 import api from '../Services/axiosInstance';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 const ChatList = () => {
     const [chats, setChats] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchChats();
+        fetchLoggedUser();
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            fetchChats();
+        }
+    }, [user]);
+
+    const fetchLoggedUser = async () => {
+        try {
+            const response = await api.get(`/api/User/GetUser`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            setUser(response.data);
+            console.log("Fetched User:", response.data);
+        } catch (error) {
+            console.error('Error fetching logged user:', error);
+        }
+    };
 
     const fetchChats = async () => {
         try {
@@ -31,14 +51,27 @@ const ChatList = () => {
                                     Authorization: `Bearer ${localStorage.getItem('token')}`
                                 }
                             });
-                            return { ...chat, item: itemResponse.data, seller: itemResponse.data.seller };
+                            const item = itemResponse.data;
+
+                            const isSellerResponse = await api.get(`/api/item/${chat.itemSoldId}/isseller`, {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                }
+                            });
+
+                            const isSeller = isSellerResponse.data.isSeller;
+
+                            const buyerResponse = await fetchUser(chat.buyerId);
+                            const buyer = buyerResponse ? buyerResponse : null;
+
+                            return { ...chat, item, buyer, seller: item.seller, isSeller };
                         } catch (error) {
                             console.error(`Error fetching item for chat ID ${chat.id}:`, error);
-                            return { ...chat, item: null, seller: null };
+                            return { ...chat, item: null, buyer: null, seller: null, isSeller: false };
                         }
                     } else {
                         console.warn(`Chat ID ${chat.id} has no associated itemSoldId`);
-                        return { ...chat, item: null, seller: null };
+                        return { ...chat, item: null, buyer: null, seller: null, isSeller: false };
                     }
                 })
             );
@@ -48,6 +81,20 @@ const ChatList = () => {
         } catch (error) {
             console.error('Error fetching chats or items:', error);
             setLoading(false);
+        }
+    };
+
+    const fetchUser = async (userId) => {
+        try {
+            const response = await api.get(`/api/User/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching user by ID ${userId}:`, error);
+            return null;
         }
     };
 
@@ -61,18 +108,24 @@ const ChatList = () => {
 
     return (
         <div className="container mt-4">
-            <h2>Chats</h2>
             <ul className="list-group">
-                {chats.map((chat) => (
-                    <li
-                        key={chat.id}
-                        className="list-group-item chat-list-item"
-                        onClick={() => handleChatSelect(chat.id)}
-                    >
-                        <div className="chat-item-name">{chat.item ? chat.item.name : 'Unknown'}</div>
-                        <div className="chat-seller-name">Seller: {chat.seller ? chat.seller.name : 'Unknown'}</div>
-                    </li>
-                ))}
+                {chats.map((chat) => {
+                    const otherUser = chat.isSeller ? chat.buyer : chat.seller;
+                    const otherUserName = otherUser ? `${otherUser.name} ${otherUser.surname}` : 'Unknown';
+                    const itemDescription = chat.isSeller ? `About your item: ${chat.item ? chat.item.name : 'Unknown'}` : `${chat.item ? chat.item.name : 'Unknown'}`;
+                    return (
+                        <li
+                            key={chat.id}
+                            className="list-group-item chat-list-item"
+                            onClick={() => handleChatSelect(chat.id)}
+                        >
+                            <div className="chat-item-name">{itemDescription}</div>
+                            <div className={`chat-${chat.isSeller ? 'buyer' : 'seller'}-name`}>
+                                {chat.isSeller ? 'Potential Buyer' : 'Seller'}: {otherUserName}
+                            </div>
+                        </li>
+                    );
+                })}
             </ul>
         </div>
     );

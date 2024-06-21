@@ -11,7 +11,9 @@ import LogoutButton from './Components/LogoutButton.jsx';
 import AdminRoute from "./Services/AdminRoute.jsx";
 import CategoryManagmentPage from "./Pages/CategoryManagmentPage.jsx";
 import ItemCreationPage from "./Pages/ItemCreationPage.jsx";
-import PublicRoute from './Services/PublicRoute.jsx'; // Import the new component
+import PublicRoute from './Services/PublicRoute.jsx';
+import EditItemPage from './Pages/EditItemPage.jsx';
+import OwnerRoute from "./Services/OwnerRoute.jsx";
 
 function App() {
     return (
@@ -26,6 +28,7 @@ function App() {
                 <Route path="/logout" element={<ProtectedRoute><LogoutButton /></ProtectedRoute>} />
                 <Route path="/category-management" element={<AdminRoute><CategoryManagmentPage /></AdminRoute>} />
                 <Route path="/create-item" element={<ProtectedRoute><ItemCreationPage /></ProtectedRoute>} />
+                <Route path="/edit-item/:id" element={<OwnerRoute><EditItemPage /></OwnerRoute>} />
                 {/* <Route path="*" element={<NotFoundPage />} /> {/* Fallback for undefined routes */}
             </Routes>
         </AuthProvider>

@@ -15,6 +15,12 @@ const Register = () => {
         setError(null);
 
         try {
+            if (!name || !surname || !email || !password) {
+                setError('All fields are required.');
+                setLoading(false);
+                return;
+            }
+
             const response = await api.post('/api/User/register', {
                 email,
                 password,
@@ -28,7 +34,6 @@ const Register = () => {
                 setError('Registration failed. ' + response.data.message);
             }
         } catch (error) {
-            console.error(error);
             if (error.response) {
                 setError(error.response.data.message || 'Registration failed. Please try again.');
             } else if (error.request) {
@@ -52,7 +57,8 @@ const Register = () => {
                         className="form-control"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        required
+                        name="name"
+                        data-testid="name-input"
                     />
                 </div>
                 <div className="mb-3">
@@ -62,7 +68,8 @@ const Register = () => {
                         className="form-control"
                         value={surname}
                         onChange={(e) => setSurname(e.target.value)}
-                        required
+                        name="surname"
+                        data-testid="surname-input"
                     />
                 </div>
                 <div className="mb-3">
@@ -72,7 +79,8 @@ const Register = () => {
                         className="form-control"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
+                        name="email"
+                        data-testid="email-input"
                     />
                 </div>
                 <div className="mb-3">
@@ -82,11 +90,12 @@ const Register = () => {
                         className="form-control"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
+                        name="password"
+                        data-testid="password-input"
                     />
                 </div>
-                {error && <div className="alert alert-danger">{error}</div>}
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                {error && <div className="alert alert-danger" data-testid="error-message">{error}</div>}
+                <button type="submit" className="btn btn-primary" disabled={loading} data-testid="submit-button">
                     {loading ? 'Registering...' : 'Register'}
                 </button>
             </form>

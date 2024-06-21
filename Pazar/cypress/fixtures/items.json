@@ -1,0 +1,54 @@
+[
+  {
+    "id": 7,
+    "name": "dfasdfasdf",
+    "description": "adsfasddfasdf",
+    "price": null,
+    "images": [],
+    "condition": 0,
+    "bidOnly": true,
+    "status": 3,
+    "createdAt": "2024-06-20T08:25:49.988717",
+    "bidDuration": 5,
+    "seller": {
+      "uuid": "08dc8eb6-899f-49c5-875e-3a18d779cfd8",
+      "name": "user2",
+      "surname": "user2"
+    },
+    "buyer": null
+  },
+  {
+    "id": 8,
+    "name": "slushalki",
+    "description": "headphones",
+    "price": 90,
+    "images": [],
+    "condition": 0,
+    "bidOnly": false,
+    "status": 1,
+    "createdAt": "2024-06-20T10:11:46.702547",
+    "seller": {
+      "uuid": "08dc8c6d-4aa6-480c-88d7-f6073e455d46",
+      "name": "Ivan",
+      "surname": "Petrov"
+    },
+    "buyer": null
+  },
+  {
+    "id": 9,
+    "name": "test",
+    "description": "test edit",
+    "price": 36,
+    "images": [],
+    "condition": 0,
+    "bidOnly": false,
+    "status": 1,
+    "createdAt": "2024-06-20T13:08:14.076572",
+    "seller": {
+      "uuid": "08dc8c6d-4aa6-480c-88d7-f6073e455d46",
+      "name": "Ivan",
+      "surname": "Petrov"
+    },
+    "buyer": null
+  }
+]

@@ -32,7 +32,7 @@ const ItemPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [item, setItem] = useState(null);
-    const [setError] = useState('');
+    const [error, setError] = useState('');
     const [bidAmount, setBidAmount] = useState('');
     const [isSeller, setIsSeller] = useState(false);
     const [bids, setBids] = useState([]);
@@ -136,6 +136,12 @@ const ItemPage = () => {
     };
 
     const handleBid = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
         setBidError('');
         try {
             await api.post(`/ws/ItemBidding/newbid`, {
@@ -143,7 +149,7 @@ const ItemPage = () => {
                 bid: parseFloat(bidAmount)
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${token}`
                 }
             });
             setBidAmount('');
@@ -157,6 +163,12 @@ const ItemPage = () => {
     };
 
     const handleMessageSeller = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
         setMessageError('');
         try {
             await api.post(`/api/chat`, {
@@ -165,7 +177,7 @@ const ItemPage = () => {
                 messageSent: message
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${token}`
                 }
             });
             setMessage('');
@@ -180,7 +192,11 @@ const ItemPage = () => {
     };
 
     const handleEdit = () => {
-        navigate(`/edit-item/${id}`);
+        if (isSeller) {
+            navigate(`/edit-item/${id}`);
+        } else {
+            alert("You are not authorized to edit this item.");
+        }
     };
 
     const handleRemoveOffer = async () => {
@@ -235,7 +251,7 @@ const ItemPage = () => {
         } else {
             const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
             const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const minutes = Math.floor((remainingTime % (1000 * 60)) / (1000 * 60));
             return `${days}d ${hours}h ${minutes}m left`;
         }
     };
@@ -270,6 +286,14 @@ const ItemPage = () => {
                     </Col>
                     <Col md={6}>
                         <h2>{item?.name}</h2>
+                        {!item?.bidOnly && (
+                            <Card className="mt-3 mb-0">
+                                <Card.Body>
+                                    <h5>Price:</h5>
+                                    <p>€{item?.price}</p>
+                                </Card.Body>
+                            </Card>
+                        )}
                         <Card className="mt-3 mb-0">
                             <Card.Body>
                                 <h5>Description:</h5>

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../Services/AuthProvider';
+import { Alert } from 'react-bootstrap';
 
 const Login = () => {
     const { login } = useAuth();
@@ -21,15 +22,19 @@ const Login = () => {
             await login(credentials);
             window.location.href = '/';
         } catch (error) {
-            console.error('Login failed:', error);
-            setError('Login failed. Please check your credentials and try again.');
+            console.error('Login failed:', error.message || error);
+            setError(error.message || 'An error occurred during login.');
         } finally {
             setLoading(false);
         }
     };
 
+    useEffect(() => {
+        console.log('Error state updated:', error);
+    }, [error]);
+
     return (
-        <div className="mt-5">
+        <div className="mt-5" data-testid="login-form">
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
@@ -41,6 +46,7 @@ const Login = () => {
                         value={credentials.email}
                         onChange={handleChange}
                         required
+                        data-testid="email"
                     />
                 </div>
                 <div className="mb-3">
@@ -52,10 +58,11 @@ const Login = () => {
                         value={credentials.password}
                         onChange={handleChange}
                         required
+                        data-testid="password"
                     />
                 </div>
-                {error && <div className="alert alert-danger">{error}</div>}
-                <button type="submit" className="btn btn-primary" disabled={loading}>
+                {error && <Alert variant="danger" data-testid="error-message">{error}</Alert>}
+                <button type="submit" className="btn btn-primary" disabled={loading} data-testid="login-button">
                     {loading ? 'Logging in...' : 'Log In'}
                 </button>
             </form>

@@ -22,6 +22,10 @@ const CategoryManagementPage = () => {
         try {
             const response = await api.get('/api/Category/GetAllCategoriesWithSubcategories');
             setCategories(response.data);
+            setExpandedCategories(response.data.reduce((acc, category) => {
+                acc[category.id] = true;
+                return acc;
+            }, {}));
         } catch (error) {
             console.error('Failed to fetch categories:', error);
         }
@@ -36,7 +40,7 @@ const CategoryManagementPage = () => {
 
     const deleteItem = async (id, type) => {
         const confirmDelete = window.confirm('Are you sure you want to delete this category?');
-        if (!confirmDelete) {
+        if (confirmDelete) {
             try {
                 await api.delete(`/api/Category/${id}`);
                 if (type === 'Category') {
@@ -119,13 +123,13 @@ const CategoryManagementPage = () => {
     return (
         <>
             <Navbar />
-            <div className="container mt-5">
+            <div className="container mt-5" data-testid="category-management-page">
                 <div className="row">
-                    <div className="col-md-3 mb-4 mb-md-0">
+                    <div className="col-md-3 mb-4 mb-md-0" data-testid="category-list">
                         <h4>Categories List</h4>
                         <ul className="list-group">
                             {categories.map((category) => (
-                                <li key={category.id} className="list-group-item">
+                                <li key={category.id} className="list-group-item" data-testid={`category-${category.id}`}>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <span onClick={() => toggleCategory(category.id)} style={{ cursor: 'pointer', flexGrow: 1 }}>
                                             <img
@@ -138,24 +142,25 @@ const CategoryManagementPage = () => {
                                                     transform: expandedCategories[category.id] ? 'rotate(180deg)' : 'rotate(0deg)',
                                                     transition: 'transform 0.3s'
                                                 }}
+                                                data-testid={`expand-category-${category.id}`}
                                             />
                                             {category.name}
                                         </span>
                                         <div>
-                                            <button className="btn btn-sm btn-warning me-2" onClick={() => editItem(category.id, category.name, 'Category')}>Edit</button>
-                                            <button className="btn btn-sm btn-danger" onClick={() => deleteItem(category.id, 'Category')}>Delete</button>
+                                            <button className="btn btn-sm btn-warning me-2" onClick={() => editItem(category.id, category.name, 'Category')} data-testid={`edit-category-${category.id}`}>Edit</button>
+                                            <button className="btn btn-sm btn-danger" onClick={() => deleteItem(category.id, 'Category')} data-testid={`delete-category-${category.id}`}>Delete</button>
                                         </div>
                                     </div>
                                     {expandedCategories[category.id] && category.subcategories.length > 0 && (
                                         <ul className="list-group mt-2">
                                             {category.subcategories.map((sub) => (
-                                                <li key={sub.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                                <li key={sub.id} className="list-group-item d-flex justify-content-between align-items-center" data-testid={`subcategory-${sub.id}`}>
                                                     <span style={{ flexGrow: 1 }}>
                                                         {sub.name}
                                                     </span>
                                                     <div>
-                                                        <button className="btn btn-sm btn-warning me-2" onClick={() => editItem(sub.id, sub.name, 'Subcategory', category.id)}>Edit</button>
-                                                        <button className="btn btn-sm btn-danger" onClick={() => deleteItem(sub.id, 'Subcategory')}>Delete</button>
+                                                        <button className="btn btn-sm btn-warning me-2" onClick={() => editItem(sub.id, sub.name, 'Subcategory', category.id)} data-testid={`edit-subcategory-${sub.id}`}>Edit</button>
+                                                        <button className="btn btn-sm btn-danger" onClick={() => deleteItem(sub.id, 'Subcategory')} data-testid={`delete-subcategory-${sub.id}`}>Delete</button>
                                                     </div>
                                                 </li>
                                             ))}
@@ -165,8 +170,8 @@ const CategoryManagementPage = () => {
                             ))}
                         </ul>
                     </div>
-                    <div className="col-md-9">
-                        <h2>{editingItem.id ? 'Edit Category' : 'Create New Category'}</h2>
+                    <div className="col-md-9" data-testid="category-form">
+                        <h2 data-testid="form-title">{editingItem.id ? 'Edit Category' : 'Create New Category'}</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
                                 <label htmlFor="categoryName">Category Name:</label>
@@ -177,6 +182,7 @@ const CategoryManagementPage = () => {
                                     value={categoryName}
                                     onChange={handleCategoryNameChange}
                                     required
+                                    data-testid="category-name-input"
                                 />
                             </div>
                             <div className="form-group form-check">
@@ -186,6 +192,7 @@ const CategoryManagementPage = () => {
                                     className="form-check-input"
                                     checked={isSubCategory}
                                     onChange={handleCheckboxChange}
+                                    data-testid="is-subcategory-checkbox"
                                 />
                                 <label htmlFor="isSubCategory" className="form-check-label">
                                     This is a sub-category
@@ -199,7 +206,9 @@ const CategoryManagementPage = () => {
                                         className="form-control"
                                         value={selectedParentCategory}
                                         onChange={handleParentCategoryChange}
-                                        required>
+                                        required
+                                        data-testid="parent-category-select"
+                                    >
                                         <option value="">Select a parent category</option>
                                         {categories.map((category) => (
                                             <option key={category.id} value={category.id}>
@@ -210,17 +219,17 @@ const CategoryManagementPage = () => {
                                     <i className="bi bi-chevron-down position-absolute" style={{ right: '10px', top: '50%', transform: 'translateY(-50%)' }}></i>
                                 </div>
                             )}
-                            <button type="submit" className="btn btn-primary mt-2">
+                            <button type="submit" className="btn btn-primary mt-2" data-testid="submit-button">
                                 {editingItem.id ? 'Update Category' : 'Create Category'}
                             </button>
                             {editingItem.id && (
-                                <button type="button" className="btn btn-secondary mt-2 ms-2" onClick={resetForm}>
+                                <button type="button" className="btn btn-secondary mt-2 ms-2" onClick={resetForm} data-testid="cancel-button">
                                     Cancel
                                 </button>
                             )}
                         </form>
-                        {error && <p className="text-danger mt-3">{error}</p>}
-                        {success && <p className="text-success mt-3">{success}</p>}
+                        {error && <p className="text-danger mt-3" data-testid="error-message">{error}</p>}
+                        {success && <p className="text-success mt-3" data-testid="success-message">{success}</p>}
                     </div>
                 </div>
             </div>

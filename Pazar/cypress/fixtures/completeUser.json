@@ -1,0 +1,26 @@
+{
+  "adminUser": {
+    "uuid": "08dc8c6d-4aa6-480c-88d7-f6073e455d46",
+    "email": "user@example.com",
+    "password": "$2a$12$RkiXiDEW3EpZrdPp4yYVpuJ57e2eXMLHbNg3QPpBPP9shyqdmzmoO",
+    "name": "Ivan",
+    "surname": "Petrov",
+    "image": null,
+    "isActive": true,
+    "createdAt": "2024-06-14T15:27:00.402556",
+    "role": 1,
+    "address": null
+  },
+  "nonAdminUser": {
+    "uuid": "123e4567-e89b-12d3-a456-426614174000",
+    "email": "nonadmin@example.com",
+    "password": "$2a$12$RkiXiDEW3EpZrdPp4yYVpuJ57e2eXMLHbNg3QPpBPP9shyqdmzmoO",
+    "name": "John",
+    "surname": "Doe",
+    "image": null,
+    "isActive": true,
+    "createdAt": "2024-06-14T15:27:00.402556",
+    "role": 0,
+    "address": null
+  }
+}
