@@ -34,6 +34,16 @@ describe('Category Management Page Tests', () => {
         });
     };
 
+    const findCategoryByName = (name) => {
+        return cy.get('[data-testid=category-list] li')
+            .contains(name)
+            .parents('li')
+            .invoke('attr', 'data-testid')
+            .then((testId) => {
+                return testId.split('-')[1];
+            });
+    };
+
     it('should redirect to login when a logged-out user attempts to access category management', () => {
         cy.visit('http://localhost:5173/category-management');
         cy.url().should('include', '/login');
@@ -126,39 +136,45 @@ describe('Category Management Page Tests', () => {
         cy.get('[data-testid=category-list]').should('contain', 'New Subcategory');
 
         // Intercept PUT request to update a category
-        cy.intercept('PUT', '/api/Category/1').as('updateCategory');
+        cy.intercept('PUT', '/api/Category/**').as('updateCategory');
 
-        // Edit a category
-        cy.get('[data-testid=category-list]').should("contain", 'New Category').click();
-        cy.get('[data-testid=category-name-input]').should('have.value', 'New Category');
-        cy.get('[data-testid=category-name-input]').clear().type('Updated Category');
-        cy.get('[data-testid=submit-button]').click();
-        cy.wait('@updateCategory').then((interception) => {
-            expect(interception.response.statusCode).to.eq(200);
+        // Find the category by name and get its test ID
+        findCategoryByName('New Category').then((categoryId) => {
+            // Edit the category
+            cy.get(`[data-testid=edit-category-${categoryId}]`).click();
+            cy.get('[data-testid=category-name-input]').should('have.value', 'New Category');
+            cy.get('[data-testid=category-name-input]').clear().type('Updated Category');
+            cy.get('[data-testid=submit-button]').click();
+            cy.wait('@updateCategory').then((interception) => {
+                expect(interception.response.statusCode).to.eq(200);
+            });
+
+            // Reload the page to fetch the updated categories
+            cy.reload();
+            cy.wait('@getCategories').its('response.statusCode').should('eq', 200);
+
+            // Verify the updated category appears in the list
+            cy.get('[data-testid=category-list]').should('contain', 'Updated Category');
         });
 
-        // Reload the page to fetch the updated categories
-        cy.reload();
-        cy.wait('@getCategories').its('response.statusCode').should('eq', 200);
+        // Intercept DELETE request to delete a category
+        cy.intercept('DELETE', '/api/Category/**').as('deleteCategory');
 
-        // Verify the updated category appears in the list
-        cy.get('[data-testid=category-list]').should('contain', 'Updated Category');
-        //
-        // // Intercept DELETE request to delete a category
-        // cy.intercept('DELETE', '/api/Category/4').as('deleteCategory');
-        //
-        // // Delete a category
-        // cy.get('[data-testid=delete-category-4]').click();
-        // cy.on('window:confirm', () => true); // Confirm the deletion
-        // cy.wait('@deleteCategory').then((interception) => {
-        //     expect(interception.response.statusCode).to.eq(200);
-        // });
-        //
-        // // Reload the page to fetch the updated categories
-        // cy.reload();
-        // cy.wait('@getCategories').its('response.statusCode').should('eq', 200);
-        //
-        // // Verify the deleted category is no longer in the list
-        // cy.get('[data-testid=category-list]').should('not.contain', 'Updated Category');
+        // Find the subcategory by name and get its test ID
+        findCategoryByName('Updated Category').then((subCategoryId) => {
+            // Delete the subcategory
+            cy.get(`[data-testid=delete-category-${subCategoryId}]`).click();
+            cy.on('window:confirm', () => true); // Confirm the deletion
+            cy.wait('@deleteCategory').then((interception) => {
+                expect(interception.response.statusCode).to.eq(200);
+            });
+
+            // Reload the page to fetch the updated categories
+            cy.reload();
+            cy.wait('@getCategories').its('response.statusCode').should('eq', 200);
+
+            // Verify the deleted subcategory is no longer in the list
+            cy.get('[data-testid=category-list]').should('not.contain', 'Updated Category');
+        });
     });
 });
