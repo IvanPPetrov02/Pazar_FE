@@ -1,210 +1,193 @@
+import { useEffect, useState, useRef } from 'react';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import Navbar from '../Components/Navbar';
-import Footer from '../Components/Footer';
 import api from '../Services/axiosInstance';
+import { Alert, ListGroup, Form, Button } from 'react-bootstrap';
+import Navbar from '../Components/Navbar.jsx';
+import Footer from '../Components/Footer.jsx';
 
-function ChatPage() {
-    let { itemId } = useParams();
+const ChatPage = () => {
+    const { id: chatId } = useParams();
     const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
-    const [chatId, setChatId] = useState(null);
-    const [userId, setUserId] = useState(null);
-    const [setSellerId] = useState(null);
-    const [loading, setLoading] = useState(true);
-    let socket;
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const [users, setUsers] = useState({});
+    const [loggedInUserId, setLoggedInUserId] = useState('');
+    const messagesEndRef = useRef(null);
+    const messagesContainerRef = useRef(null);
+    const [connection, setConnection] = useState(null);
 
     useEffect(() => {
-        console.log('itemId from useParams:', itemId);
-        if (itemId) {
-            initializeChat();
-        } else {
-            console.error('itemId is undefined');
-        }
-    }, [itemId]);
-
-    const initializeChat = async () => {
-        try {
-            // Fetch the current user's ID
-            const userId = await fetchCurrentUser();
-            setUserId(userId);
-
-            // Fetch item details to get the seller's ID
-            const sellerId = await fetchItemDetails(itemId);
-            setSellerId(sellerId);
-
-            // Create or get the chat
-            const chatId = await createOrGetChat(itemId, userId);
-            setChatId(chatId);
-
-            // Fetch existing messages for the chat
-            const messages = await fetchMessages(chatId);
-            setMessages(messages);
-
-            // Initialize WebSocket
-            initializeWebSocket(chatId);
-
-            setLoading(false);
-        } catch (error) {
-            console.error('Error initializing chat:', error);
-        }
-    };
-
-    const fetchCurrentUser = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await api.get('/api/User/GetUser', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            return response.data.uuid; // Ensure this is the correct property for user ID
-        } catch (error) {
-            console.error('Error fetching current user:', error);
-            throw error;
-        }
-    };
-
-    const fetchItemDetails = async (itemId) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const response = await api.get(`/api/Item/${itemId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            return response.data.seller.uuid; // Ensure this is the correct property for seller ID
-        } catch (error) {
-            console.error('Error fetching item details:', error);
-            throw error;
-        }
-    };
-
-    const createOrGetChat = async (itemId, userId) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const payload = {
-                ItemSoldId: itemId,
-                BuyerId: userId,
-                MessageSent: "" // Initially no message to send, just to create the chat
+        if (chatId) {
+            const fetchMessages = async () => {
+                try {
+                    const response = await api.get(`/api/message/${chatId}`);
+                    setMessages(response.data);
+                    scrollToBottom();
+                } catch (error) {
+                    setError(`Failed to fetch messages: ${error.response?.data?.Message || error.message}`);
+                }
             };
 
-            console.log('Sending payload to createOrGetChat:', payload);
-
-            const response = await api.post('/api/chat', payload, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            return response.data.chatId;
-        } catch (error) {
-            if (error.response) {
-                // Server responded with a status other than 200 range
-                console.error('Error response:', error.response.data);
-                console.error('Error status:', error.response.status);
-                console.error('Error headers:', error.response.headers);
-            } else if (error.request) {
-                // Request was made but no response received
-                console.error('Error request:', error.request);
-            } else {
-                // Something else caused the error
-                console.error('Error message:', error.message);
-            }
-            console.error('Error config:', error.config);
-            throw error;
+            fetchMessages();
+        } else {
+            setError('Chat ID is missing.');
         }
-    };
+    }, [chatId]);
 
-    const fetchMessages = async (chatId) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No token found');
+    useEffect(() => {
+        const fetchLoggedInUser = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await api.get('/api/user/getuser', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setLoggedInUserId(response.data.uuid);
+            } catch (error) {
+                setError(`Failed to fetch logged in user: ${error.response?.data?.Message || error.message}`);
             }
-
-            const response = await api.get(`/api/chat/${chatId}/messages`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching messages:', error);
-            throw error;
-        }
-    };
-
-    const initializeWebSocket = (chatId) => {
-        socket = new WebSocket(`ws://localhost:5000/ws/messages`);
-
-        socket.onopen = () => {
-            console.log('WebSocket connection established');
-            socket.send(JSON.stringify({ chatId }));
         };
 
-        socket.onmessage = (event) => {
-            const receivedMessages = JSON.parse(event.data);
-            setMessages((prevMessages) => [...prevMessages, ...receivedMessages]);
+        fetchLoggedInUser();
+    }, []);
+
+    useEffect(() => {
+        const fetchUserIfNeeded = async (userId) => {
+            if (!users[userId]) {
+                try {
+                    const response = await api.get(`/api/user/${userId}`);
+                    setUsers((prevUsers) => ({
+                        ...prevUsers,
+                        [userId]: response.data.name,
+                    }));
+                } catch (error) {
+                    console.error(`Failed to fetch user ${userId}: ${error.message}`);
+                }
+            }
         };
 
-        socket.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
+        messages.forEach((msg) => {
+            fetchUserIfNeeded(msg.senderId);
+        });
+    }, [messages]);
+
+    useEffect(() => {
+        const newConnection = new HubConnectionBuilder()
+            .withUrl('http://localhost:5190/messageHub', {
+                accessTokenFactory: () => localStorage.getItem('token')
+            })
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(newConnection);
 
         return () => {
-            socket.close();
+            if (newConnection) {
+                newConnection.stop().catch(err => console.error('Error stopping connection:', err));
+            }
         };
-    };
+    }, []);
 
-    const sendMessage = () => {
-        if (input && socket.readyState === WebSocket.OPEN) {
-            const message = {
-                chatId,
-                itemSoldId: itemId,
-                buyerId: userId,
-                messageSent: input
-            };
-            socket.send(JSON.stringify(message));
-            setInput('');
+    useEffect(() => {
+        if (connection) {
+            connection.start()
+                .then(() => {
+                    console.log('Connected to SignalR');
+                    connection.invoke('JoinChat', parseInt(chatId))
+                        .catch(err => console.error('Error joining chat:', err));
+
+                    connection.on('ReceiveMessage', (message) => {
+                        setMessages(prevMessages => [...prevMessages, message]);
+                        scrollToBottom();
+                    });
+                })
+                .catch(err => {
+                    console.error('Error connecting to SignalR:', err);
+                    setError('Could not connect to chat.');
+                });
+        }
+    }, [connection, chatId]);
+
+    const scrollToBottom = () => {
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    const sendMessage = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('You must be logged in to send messages.');
+            return;
+        }
+
+        try {
+            const response = await api.get('/api/user/getuser', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const userId = response.data.uuid;
+
+            const messageDto = {
+                ChatId: parseInt(chatId),
+                SenderId: userId,
+                MessageSent: message,
+                SentAt: new Date().toISOString()
+            };
+
+            await connection.invoke('SendMessage', messageDto);
+            setMessage('');
+        } catch (error) {
+            setError(`Failed to send message: ${error.message}`);
+        }
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    };
 
     return (
-        <>
+        <div className="App d-flex flex-column min-vh-100">
             <Navbar />
-            <div className="container my-3">
+            <div className="container flex-grow-1 d-flex flex-column">
                 <h2>Chat</h2>
-                <p>Chat for item ID: {itemId}</p>
-                <div className="chat-box">
-                    {messages.map((msg, index) => (
-                        <div key={index}>
-                            <strong>{msg.senderName}</strong>: {msg.messageSent}
-                        </div>
-                    ))}
+                {error && <Alert variant="danger">{error}</Alert>}
+                <div
+                    className="flex-grow-1 overflow-auto mb-3"
+                    ref={messagesContainerRef}
+                    style={{ maxHeight: '400px', display: 'flex', flexDirection: 'column-reverse' }}
+                >
+                    <ListGroup>
+                        {messages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt)).map((msg, index) => (
+                            <ListGroup.Item key={index}>
+                                <strong>{msg.senderId === loggedInUserId ? 'You' : users[msg.senderId] || msg.senderId}:</strong> {msg.messageSent}
+                                <div className="text-muted small">
+                                    {new Date(msg.sentAt).toLocaleString()}
+                                </div>
+                            </ListGroup.Item>
+                        ))}
+                        <div ref={messagesEndRef} />
+                    </ListGroup>
                 </div>
-                <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Type your message"
-                />
-                <button onClick={sendMessage}>Send</button>
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Message</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Type a message"
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                        />
+                    </Form.Group>
+                    <Button variant="primary" onClick={sendMessage}>Send</Button>
+                </Form>
             </div>
             <Footer />
-        </>
+        </div>
     );
-}
+};
 
 export default ChatPage;

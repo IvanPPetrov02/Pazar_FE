@@ -21,7 +21,7 @@ const ChatList = () => {
 
     const fetchLoggedUser = async () => {
         try {
-            const response = await api.get(`/api/User/GetUser`, {
+            const response = await api.get(`/api/user/getuser`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -86,7 +86,7 @@ const ChatList = () => {
 
     const fetchUser = async (userId) => {
         try {
-            const response = await api.get(`/api/User/${userId}`, {
+            const response = await api.get(`/api/user/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }

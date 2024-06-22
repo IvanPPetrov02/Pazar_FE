@@ -68,7 +68,7 @@ const ItemPage = () => {
 
     const fetchItem = async () => {
         try {
-            const response = await api.get(`/api/Item/${id}`);
+            const response = await api.get(`/api/item/${id}`);
             setItem(response.data);
         } catch (error) {
             setError(`Failed to fetch item details. ${error.response ? error.response.data.message : ''}`);
@@ -77,7 +77,7 @@ const ItemPage = () => {
 
     const checkIfUserIsSeller = async () => {
         try {
-            const response = await api.get(`/api/Item/${id}/isseller`, {
+            const response = await api.get(`/api/item/${id}/isseller`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -90,7 +90,7 @@ const ItemPage = () => {
 
     const fetchLoggedUser = async () => {
         try {
-            const response = await api.get(`/api/User/GetUser`, {
+            const response = await api.get(`/api/user/getuser`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
@@ -103,7 +103,7 @@ const ItemPage = () => {
 
     const fetchBids = async () => {
         try {
-            const response = await api.get(`/ws/ItemBidding/bids/${id}`);
+            const response = await api.get(`/api/itembidding/bids/${id}`);
             setBids(response.data);
             console.log('Bids fetched:', response.data); // Debugging line
         } catch (error) {
@@ -112,7 +112,7 @@ const ItemPage = () => {
     };
 
     const initializeWebSocket = () => {
-        webSocket.current = new WebSocket(`ws://localhost:5190/ws/ItemBidding`);
+        webSocket.current = new WebSocket(`ws://localhost:5190/ws/itembidding`);
         webSocket.current.onopen = () => {
             console.log('WebSocket connection established');
             webSocket.current.send(JSON.stringify({ itemId: id }));
@@ -144,7 +144,7 @@ const ItemPage = () => {
 
         setBidError('');
         try {
-            await api.post(`/ws/ItemBidding/newbid`, {
+            await api.post(`/api/itembidding/newbid`, {
                 itemID: id,
                 bid: parseFloat(bidAmount)
             }, {
@@ -203,7 +203,7 @@ const ItemPage = () => {
         const confirmDelete = window.confirm('Are you sure you want to remove this offer?');
         if (confirmDelete) {
             try {
-                await api.delete(`/api/Item/${id}`, {
+                await api.delete(`/api/item/${id}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
