@@ -2,7 +2,7 @@ import axios from 'axios';
 import TokenManager from './TokenManager';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5190', // Adjust the base URL as needed
+    baseURL: 'http://localhost:3000', // Adjust the base URL as needed
 });
 
 api.interceptors.request.use(
